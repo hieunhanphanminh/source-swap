@@ -1,5 +1,5 @@
 
-import { useScrollStore } from '@/app/stores/scrollStore';
+import { useScrollStore } from '@/stores';
 import { useProgress } from '@react-three/drei';
 import { usePortalStore, useThemeStore } from '@/stores';
 import gsap from 'gsap';
@@ -9,7 +9,7 @@ import { isMobile } from 'react-device-detect';
 const AwwardsBadge = () => {
   const badgeRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<SVGGElement>(null);
-  const isPortalActive = usePortalStore((state) => !!state.activePortalId);
+  const isPortalActive = usePortalStore((state: any) => !!state.activePortalId);
   const scrollProgress = useScrollStore((state) => state.scrollProgress);
   const color = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();

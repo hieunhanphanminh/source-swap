@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
-import { FOOTER_LINKS } from "../../constants";
+import { FOOTER_LINKS } from "@/constants";
 import { FooterLink } from "@/types/portfolio";
 
 const FooterLinkItem = ({ link }: { link: FooterLink }) => {
@@ -96,7 +96,7 @@ const Footer = () => {
   });
 
   const getLinks = () => {
-    return FOOTER_LINKS.map((link, i) => {
+    return FOOTER_LINKS.map((link: FooterLink, i: number) => {
       return (
         <group key={i} position={[i * (isMobile ? 1.1 : 2), 0, 0]}>
           <FooterLinkItem link={link}/>
