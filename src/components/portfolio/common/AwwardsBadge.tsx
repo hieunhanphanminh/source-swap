@@ -70,8 +70,14 @@ const AwwardsBadge = () => {
         right: -100,
       }}
     >
-      <a href="https://www.awwwards.com/sites/mohit-virlis-portfolio" target="_blank">
-        <svg width="53.08" height="171.358">
+      <a
+        href="https://www.awwwards.com/sites/mohit-virlis-portfolio"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View on Awwwards (opens in new tab)"
+        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#ffd54f] inline-block"
+      >
+        <svg width="53.08" height="171.358" aria-hidden="true" focusable="false">
           <path className="js-color-bg" fill="white" d="M0 0h53.08v171.358H0z"></path>
           <g className="js-color-text" fill={color} ref={fillRef}>
             <path
