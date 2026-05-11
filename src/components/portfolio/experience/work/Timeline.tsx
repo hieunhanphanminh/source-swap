@@ -1,13 +1,13 @@
 import { Box, Edges, Line, Text, TextProps } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { usePortalStore } from "@stores";
+import { usePortalStore } from "@/stores";
 import gsap from "gsap";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 
-import { WORK_TIMELINE } from "@constants";
-import { WorkTimelinePoint } from "@types";
+import { WORK_TIMELINE } from "@/constants";
+import { WorkTimelinePoint } from "@/types/portfolio";
 
 const reusableLeft = new THREE.Vector3(-0.3, 0, -0.1);
 const reusableRight = new THREE.Vector3(0.3, 0, -0.1);

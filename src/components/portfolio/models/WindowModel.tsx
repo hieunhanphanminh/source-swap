@@ -8,7 +8,6 @@ Source: https://sketchfab.com/3d-models/residential-window-ae11104237314463a6125
 Title: Residential Window
 */
 
-'use client';
 
 import { useGLTF, useScroll } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';

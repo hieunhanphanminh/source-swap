@@ -1,4 +1,3 @@
-'use client';
 
 import { Text, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";

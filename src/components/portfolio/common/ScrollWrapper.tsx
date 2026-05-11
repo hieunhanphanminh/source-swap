@@ -1,11 +1,10 @@
-'use client';
 
 import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 
-import { usePortalStore, useScrollStore } from "@stores";
+import { usePortalStore, useScrollStore } from "@/stores";
 
 const ScrollWrapper = (props: { children: React.ReactNode | React.ReactNode[]}) => {
   const { camera } = useThree();

@@ -1,4 +1,4 @@
-import { Project } from "../types";
+import { Project } from "@/types/portfolio";
 
 // TODO: Move this to API
 export const PROJECTS: Project[] = [

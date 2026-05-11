@@ -1,5 +1,5 @@
 
-import { useThemeStore } from "@/app/stores";
+import { useThemeStore } from "@/stores";
 import { Stars } from "@react-three/drei";
 
 const StarsContainer = () => {

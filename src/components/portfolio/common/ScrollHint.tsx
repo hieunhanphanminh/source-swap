@@ -2,7 +2,7 @@ import gsap from "gsap";
 import Image from "next/image";
 import { useEffect } from "react";
 
-import { usePortalStore, useScrollStore } from "@stores";
+import { usePortalStore, useScrollStore } from "@/stores";
 
 export const ScrollHint = () => {
   const portal = usePortalStore((state) => state.activePortalId);

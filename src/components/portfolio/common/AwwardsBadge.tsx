@@ -1,8 +1,7 @@
-'use client';
 
 import { useScrollStore } from '@/app/stores/scrollStore';
 import { useProgress } from '@react-three/drei';
-import { usePortalStore, useThemeStore } from '@stores';
+import { usePortalStore, useThemeStore } from '@/stores';
 import gsap from 'gsap';
 import { useEffect, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { WorkTimelinePoint } from "../types";
+import { WorkTimelinePoint } from "@/types/portfolio";
 
 export const WORK_TIMELINE: WorkTimelinePoint[] = [
   {

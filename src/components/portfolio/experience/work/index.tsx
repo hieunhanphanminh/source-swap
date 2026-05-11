@@ -1,5 +1,5 @@
 import { ScrollControls } from "@react-three/drei";
-import { usePortalStore, useScrollStore } from "@stores";
+import { usePortalStore, useScrollStore } from "@/stores";
 import { useEffect } from "react";
 import * as THREE from "three";
 import { Memory } from "../../models/Memory";

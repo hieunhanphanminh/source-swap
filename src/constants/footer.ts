@@ -1,4 +1,4 @@
-import { FooterLink } from "../types";
+import { FooterLink } from "@/types/portfolio";
 
 export const FOOTER_LINKS: FooterLink[] = [
   {

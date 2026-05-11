@@ -1,4 +1,3 @@
-'use client';
 
 import { useGSAP } from "@gsap/react";
 import { AdaptiveDpr, Preload, ScrollControls, useProgress } from "@react-three/drei";
@@ -7,7 +6,7 @@ import gsap from "gsap";
 import { Suspense, useRef } from "react";
 import { isMobile } from "react-device-detect";
 
-import { useThemeStore } from "@stores";
+import { useThemeStore } from "@/stores";
 
 import AwwardsBadge from "./AwwardsBadge";
 import Preloader from "./Preloader";

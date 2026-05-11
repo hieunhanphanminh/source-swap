@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
 import ProjectTile from "./ProjectTile";
 
-import { PROJECTS } from "@constants";
-import { usePortalStore } from "@stores";
+import { PROJECTS } from "@/constants";
+import { usePortalStore } from "@/stores";
 
 const ProjectsCarousel = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
