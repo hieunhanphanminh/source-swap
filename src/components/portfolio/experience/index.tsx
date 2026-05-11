@@ -21,10 +21,10 @@ interface TileDef {
 }
 
 const TILES: TileDef[] = [
-  { id: "work", title: "OUR TIMELINE", color: "#b9c6d6", Content: Work },
-  { id: "gallery", title: "GALLERY", color: "#d6c0c8", Content: Gallery },
-  { id: "projects", title: "REASONS I LOVE YOU", color: "#bdd1e3", Content: Projects },
   { id: "dreams", title: "OUR DREAMS", color: "#c9d6c0", Content: Dreams },
+  { id: "gallery", title: "GALLERY", color: "#d6c0c8", Content: Gallery },
+  { id: "work", title: "OUR TIMELINE", color: "#b9c6d6", Content: Work },
+  { id: "projects", title: "REASONS I LOVE YOU", color: "#bdd1e3", Content: Projects },
   { id: "letter", title: "A LETTER", color: "#f0d9a8", Content: Letter },
 ];
 
