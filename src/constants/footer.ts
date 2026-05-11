@@ -1,34 +1,17 @@
 import { FooterLink } from "@/types/portfolio";
 
+// External / social links only — internal page links now live as 3D portals.
 export const FOOTER_LINKS: FooterLink[] = [
   {
-    name: "Timeline",
-    hoverText: "Our story",
-    icon: "icons/file.svg",
-    url: "/timeline",
-  },
-  {
-    name: "Gallery",
-    hoverText: "The most beautiful girl",
-    icon: "icons/instagram.svg",
-    url: "/gallery",
-  },
-  {
-    name: "Reasons",
-    hoverText: "10 reasons",
-    icon: "icons/spotify.svg",
-    url: "/reasons",
-  },
-  {
-    name: "Dreams",
-    hoverText: "Bucket list",
+    name: "Github",
+    hoverText: "Source code",
     icon: "icons/github.svg",
-    url: "/dreams",
+    url: "https://github.com",
   },
   {
-    name: "Letter",
-    hoverText: "For you, Rhia",
-    icon: "icons/linkedin.svg",
-    url: "/letter",
+    name: "Spotify",
+    hoverText: "Our soundtrack",
+    icon: "icons/spotify.svg",
+    url: "https://open.spotify.com",
   },
 ];

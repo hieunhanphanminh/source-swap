@@ -1,12 +1,32 @@
 import { Text, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { usePortalStore } from "@/stores";
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from 'three';
 import GridTile from "./GridTile";
-import Projects from "./projects";
-import Work from "./work";
+
+// Lazy-load each portal scene so they don't bloat first paint.
+const Work = lazy(() => import("./work"));
+const Projects = lazy(() => import("./projects"));
+const Gallery = lazy(() => import("./gallery"));
+const Dreams = lazy(() => import("./dreams"));
+const Letter = lazy(() => import("./letter"));
+
+interface TileDef {
+  id: string;
+  title: string;
+  color: string;
+  Content: React.LazyExoticComponent<React.ComponentType>;
+}
+
+const TILES: TileDef[] = [
+  { id: "work", title: "OUR TIMELINE", color: "#b9c6d6", Content: Work },
+  { id: "gallery", title: "GALLERY", color: "#d6c0c8", Content: Gallery },
+  { id: "projects", title: "REASONS I LOVE YOU", color: "#bdd1e3", Content: Projects },
+  { id: "dreams", title: "OUR DREAMS", color: "#c9d6c0", Content: Dreams },
+  { id: "letter", title: "A LETTER", color: "#f0d9a8", Content: Letter },
+];
 
 const Experience = () => {
   const titleRef = useRef<THREE.Group>(null);
@@ -20,7 +40,7 @@ const Experience = () => {
     color: 'white',
   };
 
-  useFrame((sate, delta) => {
+  useFrame((_, delta) => {
     const d = data.range(0.8, 0.2);
     const e = data.range(0.7, 0.2);
 
@@ -31,9 +51,9 @@ const Experience = () => {
 
     if (titleRef.current) {
       titleRef.current.children.forEach((text, i) => {
-        const y =  Math.max(Math.min((1 - d) * (10 - i), 10), 0.5);
+        const y = Math.max(Math.min((1 - d) * (10 - i), 10), 0.5);
         text.position.y = THREE.MathUtils.damp(text.position.y, y, 7, delta);
-        /* eslint-disable  @typescript-eslint/no-explicit-any */
+        /* eslint-disable @typescript-eslint/no-explicit-any */
         (text as any).fillOpacity = e;
       });
     }
@@ -49,32 +69,39 @@ const Experience = () => {
     });
   };
 
+  // Layout: Desktop = 5 tiles in one horizontal arc. Mobile = 5 stacked vertically.
+  const tileSize: [number, number] = isMobile ? [2.4, 1.5] : [2.2, 2.6];
+  const tileGap = isMobile ? 1.7 : 2.6;
+
   return (
-    <group position={[0, -41.5, 12]} rotation={[-Math.PI / 2, 0 ,-Math.PI / 2]}>
-      {/* <mesh receiveShadow position={[-5, 0, 0.1]}>
-        <planeGeometry args={[10, 5, 1]} />
-        <shadowMaterial opacity={0.1} />
-      </mesh> */}
+    <group position={[0, -41.5, 12]} rotation={[-Math.PI / 2, 0, -Math.PI / 2]}>
       <group rotation={[0, 0, Math.PI / 2]}>
-        <group ref={titleRef} position={[isMobile ? -1.8 : -3.6, 2, -2]}>
+        <group ref={titleRef} position={[isMobile ? -1.8 : -3.6, 4, -2]}>
           {getTitle()}
         </group>
 
         <group position={[0, -1, 0]} ref={groupRef}>
-          <GridTile title='OUR TIMELINE'
-            id="work"
-            color='#b9c6d6'
-            textAlign='left'
-            position={new THREE.Vector3(isMobile ? -1 : -2, 0, isMobile ? 0.4 : 0)}>
-            <Work/>
-          </GridTile>
-          <GridTile title='REASONS I LOVE YOU'
-            id="projects"
-            color='#bdd1e3'
-            textAlign='right'
-            position={new THREE.Vector3(isMobile ? 1 : 2, 0, 0)}>
-            <Projects/>
-          </GridTile>
+          {TILES.map((tile, i) => {
+            const offset = (i - (TILES.length - 1) / 2) * tileGap;
+            const position = isMobile
+              ? new THREE.Vector3(0, offset, 0)
+              : new THREE.Vector3(offset, 0, 0);
+            return (
+              <Suspense key={tile.id} fallback={null}>
+                <GridTile
+                  id={tile.id}
+                  title={tile.title}
+                  color={tile.color}
+                  textAlign="center"
+                  position={position}
+                  size={tileSize}
+                  titleSize={isMobile ? 0.7 : 0.85}
+                >
+                  <tile.Content />
+                </GridTile>
+              </Suspense>
+            );
+          })}
         </group>
       </group>
     </group>

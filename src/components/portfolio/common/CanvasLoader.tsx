@@ -64,10 +64,17 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
     <div className="h-[100dvh] wrapper relative">
       <div className="h-[100dvh] relative" ref={ref}>
         <Canvas className="base-canvas"
-          shadows
+          shadows={!isMobile}
           style={canvasStyle}
           ref={canvasRef}
-          dpr={[1, 2]}>
+          dpr={[1, isMobile ? 1.25 : 1.5]}
+          gl={{
+            antialias: !isMobile,
+            powerPreference: "high-performance",
+            stencil: false,
+            depth: true,
+          }}
+          performance={{ min: 0.5 }}>
           {/* <Perf/> */}
           <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
