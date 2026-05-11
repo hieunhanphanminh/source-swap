@@ -1,59 +1,65 @@
 import { Project } from "@/types/portfolio";
 
-// TODO: Move this to API
+// Reframed as "10 Reasons I love you, Rhia" — each reason is a tile in the carousel.
 export const PROJECTS: Project[] = [
   {
-    title: 'Angular Gulp Seed',
-    date: 'Aug 2016',
-    subtext: 'A basic starter project to initialize project using AngularJS and Gulp. It follows MVC architecture and uses standard app structure.',
-    url: 'https://github.com/mohitvirli/angular-gulp-seed',
+    title: "01 · Pearl",
+    date: "🎮 How we met",
+    subtext:
+      "You on Sage, dropping smokes and dropping me into a crush in the same round. Pearl will always be our map.",
   },
   {
-    title: 'State.js',
-    date: 'Jul 2020',
-    subtext: 'A lightweight library for turning JS objects into observables, providing a convenient API for state management and manipulation.',
-    url: 'https://github.com/mohitvirli/state.js',
+    title: "02 · Your laugh",
+    date: "😂 Brain chemistry",
+    subtext:
+      "Specifically the dumb wheezy one you do when you weren't trying to laugh — that one literally rewires my brain chemistry.",
   },
   {
-    title: 'change-host',
-    date: 'Jul 2020',
-    subtext: 'A CLI tool to manage /etc/hosts entries for local development. It enables quick and easy mapping of IPs to URLs with a single command.',
-    url: 'https://github.com/mohitvirli/change-host',
+    title: "03 · Late nights",
+    date: "🥺 Soft voice",
+    subtext:
+      "How soft your voice gets late at night. It's the only sound that turns my whole nervous system into airplane mode.",
   },
   {
-    title: 'Vaccine Slots Discord Bot',
-    date: 'May 2021',
-    subtext: 'A Discord Bot that sends alerts for COVID-19 vaccine availability based on PIN/district using public APIs.',
-    url: 'https://github.com/mohitvirli/vaccine-slots-discord-bot',
+    title: "04 · Locked in",
+    date: "🔥 Ranked mode",
+    subtext:
+      "Your stubborn, competitive, absolutely-locked-in mode in ranked. Watching you tilt and then clutch is genuinely my favorite show.",
   },
   {
-    title: 'Chat bot',
-    date: 'Aug 2024',
-    subtext: 'A streaming chatbot that allows users to switch between different LLMs with custom API keys.',
-    url: 'https://github.com/mohitvirli/chat-bot-vercel',
+    title: "05 · Tiny things",
+    date: "🧠 You remember",
+    subtext:
+      "The way you remember tiny things I said weeks ago — and bring them back at the perfect moment, like a Rhia-shaped folder of me.",
   },
   {
-    title: 'Word Game',
-    date: 'Oct 2024',
-    subtext: 'This word game app offers single and multiplayer modes where players take turns forming words, each starting with the last letter of the previous word.',
-    url: 'https://github.com/mohitvirli/word-game',
+    title: "06 · Your halves",
+    date: "🌏 Turkish & Vietnamese",
+    subtext:
+      "Your two halves — Turkish and Vietnamese — and how unapologetically you you are about both. I want to learn every story.",
   },
   {
-    title: 'DJ Gig',
-    date: 'Mar 2025',
-    subtext: 'Hosted a Sundowner event which was recorded and is out on YouTube. Furthermore, I performed a UKG/140 DJ set at a local club.',
-    url: 'https://www.youtube.com/watch?v=oauQSEySkoQ',
+    title: "07 · Out of nowhere",
+    date: "💌 Random texts",
+    subtext:
+      "The random 'thinking of you' texts that hit at 2:47pm on a Tuesday. Those rebuild me.",
   },
   {
-    title: 'Portfolio',
-    date: 'Apr 2025',
-    subtext: '[Enter a meta joke].',
-    url: 'https://github.com/mohitvirli/mohitvirli.github.io',
+    title: "08 · Safe",
+    date: "🫶 No walls",
+    subtext:
+      "How safe you make me feel saying things I don't say to anyone else. With you, my walls don't even bother showing up to work.",
   },
   {
-    title: 'Focus Clock',
-    date: 'Jun 2025',
-    subtext: 'Developed a minimalist clock featuring a time-remaining indicator.',
-    url: 'https://github.com/mohitvirli/focus-clock',
+    title: "09 · Future you",
+    date: "✨ Glimpses",
+    subtext:
+      "The future version of you that I get little glimpses of — and the fact that I get to be standing right next to her when she gets there.",
+  },
+  {
+    title: "10 · It's you",
+    date: "💍 Always",
+    subtext:
+      "Out of every lobby, every server, every city — it's you. It was always going to be you. That's not a reason, it's a fact.",
   },
 ];
