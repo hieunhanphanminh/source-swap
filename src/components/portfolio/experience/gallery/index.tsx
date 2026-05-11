@@ -1,19 +1,17 @@
 import { useTexture } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import gsap from "gsap";
-import { useEffect, useRef } from "react";
-import { isMobile } from "react-device-detect";
+import { useFrame } from "@react-three/fiber";
+import { useRef } from "react";
 import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_PHOTOS } from "@/constants/gallery";
 
-const PhotoTile = ({ src, position, rotation }: {
+const PhotoTile = ({ src, position, rotation, delay }: {
   src: string;
   position: [number, number, number];
   rotation: [number, number, number];
+  delay: number;
 }) => {
   const tex = useTexture(src);
-  // Cap aniso/encoding for perf
   if (tex) {
     tex.anisotropy = 4;
     tex.minFilter = THREE.LinearFilter;
@@ -22,48 +20,43 @@ const PhotoTile = ({ src, position, rotation }: {
   const meshRef = useRef<THREE.Mesh>(null);
   useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime + position[0]) * 0.08;
+      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.8 + delay) * 0.08;
     }
   });
   return (
     <mesh ref={meshRef} position={position} rotation={rotation}>
-      <planeGeometry args={[1.6, 2.1]} />
+      <planeGeometry args={[0.95, 1.25]} />
       <meshBasicMaterial map={tex} toneMapped={false} />
     </mesh>
   );
 };
 
 const Gallery = () => {
-  const { camera } = useThree();
+  const groupRef = useRef<THREE.Group>(null);
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
 
-  useEffect(() => {
-    if (isActive) {
-      gsap.to(camera.position, { x: 1.4, y: -42, z: 12, duration: 1 });
-    }
-  }, [isActive]);
-
   useFrame((state, delta) => {
-    if (isActive && !isMobile) {
-      camera.rotation.y = THREE.MathUtils.lerp(camera.rotation.y, -(state.pointer.x * Math.PI) / 8, 0.04);
-      camera.position.z = THREE.MathUtils.damp(camera.position.z, 12 - state.pointer.y * 0.6, 6, delta);
+    if (groupRef.current) {
+      const target = isActive ? state.pointer.x * 0.4 : 0;
+      groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, target, 4, delta);
     }
   });
 
+  // Lay out photos in a small grid that fits inside the portal plane.
+  const cols = 3;
+  const gap = 1.05;
   return (
-    <group rotation={[0, -Math.PI / 12, 0]}>
-      <ambientLight intensity={0.9} />
+    <group ref={groupRef}>
+      <ambientLight intensity={1} />
+      <color attach="background" args={["#d6c0c8"]} />
       {GALLERY_PHOTOS.map((p, i) => {
-        const angle = (Math.PI / GALLERY_PHOTOS.length) * i - Math.PI / 4;
-        const r = 4.5;
-        return (
-          <PhotoTile
-            key={i}
-            src={p.src}
-            position={[Math.cos(angle) * r, 0, -Math.sin(angle) * r - 1]}
-            rotation={[0, angle + Math.PI / 2, 0]}
-          />
-        );
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const x = (col - (cols - 1) / 2) * gap;
+        const y = ((Math.ceil(GALLERY_PHOTOS.length / cols) - 1) / 2 - row) * 1.4;
+        const z = -0.2 - (i % 2) * 0.15;
+        const rot: [number, number, number] = [0, ((col - 1) * Math.PI) / 32, 0];
+        return <PhotoTile key={i} src={p.src} position={[x, y, z]} rotation={rot} delay={i} />;
       })}
     </group>
   );
