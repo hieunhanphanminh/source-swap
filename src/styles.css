@@ -683,11 +683,18 @@
 .sr-only-focusable button {
   position: absolute;
   left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
+.sr-only-focusable:focus-within button,
 .sr-only-focusable button:focus,
 .sr-only-focusable button:focus-visible {
   position: static;
-  left: auto;
+  width: auto;
+  height: auto;
+  overflow: visible;
 }
 .a11y-portal-btn {
   background: rgba(0,0,0,0.85);
