@@ -148,6 +148,7 @@ function CinematicOutlet() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
   const [mounted, setMounted] = useState(false);
   const [splashDone, setSplashDone] = useState(false);
 
@@ -155,6 +156,15 @@ function RootComponent() {
     setMounted(true);
     if (sessionStorage.getItem("splash_shown")) setSplashDone(true);
   }, []);
+
+  // Home page is a full-screen 3D canvas — render bare, without overlays.
+  if (location.pathname === "/") {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -176,3 +186,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

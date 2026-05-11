@@ -1,14 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Index from "@/pages/Index";
+import { lazy, Suspense, useEffect, useState } from "react";
+
+const PortfolioScene = lazy(() => import("@/components/portfolio/PortfolioScene"));
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Every Moment With Rhia — A Love Letter In Code" },
-      { name: "description", content: "A cinematic love letter to Rhia Henne — gallery, timeline, reasons, dreams, and a message written entirely for you." },
-      { property: "og:title", content: "Every Moment With Rhia" },
-      { property: "og:description", content: "A cinematic love letter, written in code, just for you." },
+      { title: "For you, Rhia ✌️" },
+      { name: "description", content: "A 3D love letter — for Rhia." },
     ],
   }),
   component: Index,
 });
+
+function Index() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div className="h-[100dvh] w-full flex items-center justify-center bg-black text-white">
+        <span className="text-sm tracking-widest opacity-70">LOADING…</span>
+      </div>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <div className="h-[100dvh] w-full flex items-center justify-center bg-black text-white">
+          <span className="text-sm tracking-widest opacity-70">LOADING…</span>
+        </div>
+      }
+    >
+      <PortfolioScene />
+    </Suspense>
+  );
+}
