@@ -628,3 +628,46 @@
   0%   { transform: translate3d(0, 0, 0) rotate(0.3deg); }
   100% { transform: translate3d(10px, -10px, 0) rotate(-0.3deg); }
 }
+
+/* Portfolio (3D scene) styles */
+@font-face {
+  font-family: "Soria";
+  src: url("/soria-font.ttf") format("truetype");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Vercetti";
+  src: url("/Vercetti-Regular.woff") format("woff");
+  font-display: swap;
+}
+
+.wrapper {
+  background: #000;
+}
+
+.close {
+  position: absolute;
+  left: 32px;
+  top: 32px;
+  width: 48px;
+  height: 48px;
+  opacity: 0.3;
+  cursor: pointer;
+}
+@media screen and (max-width: 768px) {
+  .close {
+    margin-left: -24px;
+    margin-top: -16px;
+  }
+}
+.close:hover { opacity: 1; }
+.close:before, .close:after {
+  position: absolute;
+  left: 2rem;
+  content: ' ';
+  height: 48px;
+  width: 2px;
+  background-color: #0a0a0a;
+}
+.close:before { transform: rotate(45deg); }
+.close:after  { transform: rotate(-45deg); }
