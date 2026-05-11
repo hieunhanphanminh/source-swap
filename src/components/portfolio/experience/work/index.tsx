@@ -49,7 +49,7 @@ const Work = () => {
         <planeGeometry args={[4, 4, 1]} />
         <shadowMaterial opacity={0.1} />
       </mesh>
-      <ScrollControls style={{ zIndex: -1}} pages={2} maxSpeed={0.4}>
+      <ScrollControls style={{ zIndex: -1}} pages={3} maxSpeed={0.4}>
         <Memory scale={new THREE.Vector3(5, 5, 5)} position={new THREE.Vector3(0, -6, 1)}/>
         <Timeline progress={isActive ? scrollProgress : 0} />
       </ScrollControls>
