@@ -6,6 +6,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
+import { Wanderer } from "../../models/Wanderer";
 import GalleryTile from "./GalleryTile";
 import { TouchPanControls } from "../projects/TouchPanControls";
 
@@ -21,7 +22,7 @@ const GalleryCarousel = () => {
 
   const tiles = useMemo(() => {
     const fov = Math.PI;
-    const distance = 14;
+    const distance = 13;
     const count = GALLERY_ITEMS.length;
     return GALLERY_ITEMS.map((item, i) => {
       const angle = (fov / count) * i;
@@ -80,13 +81,20 @@ const Gallery = () => {
 
   return (
     <group>
-      {/* Romantic mood — warm pink rim + soft blush ambient */}
+      {/* Romantic remix — warm rose ambient + pink/lavender rim lights */}
       <ambientLight intensity={0.55} color="#ffd8e6" />
       <pointLight position={[6, 4, 6]} intensity={1.2} color="#ff8fb1" distance={40} />
       <pointLight position={[-6, -2, 4]} intensity={0.9} color="#c98bff" distance={40} />
       <pointLight position={[0, -8, -10]} intensity={0.6} color="#ff5d8f" distance={50} />
 
-      {/* Floating heart-bokeh: large translucent pink discs in the distance */}
+      {/* Same dreamy wanderer silhouette as Reasons, tinted by the rose lights */}
+      <Wanderer
+        rotation={new THREE.Euler(0, Math.PI / 6, 0)}
+        scale={new THREE.Vector3(1.5, 1.5, 1.5)}
+        position={new THREE.Vector3(0, -1, -1)}
+      />
+
+      {/* Floating heart-bokeh discs in the distance */}
       {Array.from({ length: 14 }).map((_, i) => {
         const a = (i / 14) * Math.PI * 2;
         const r = 16 + (i % 3) * 4;
