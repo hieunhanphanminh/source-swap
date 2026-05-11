@@ -119,4 +119,4 @@ const ProgressLoader = ({ progress }: { progress: number }) => {
   );
 };
 
-export default dynamic(() => Promise.resolve(ProgressLoader), { ssr: false });
+export default ProgressLoader;
