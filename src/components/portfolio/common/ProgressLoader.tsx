@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 
