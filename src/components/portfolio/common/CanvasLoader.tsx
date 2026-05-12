@@ -1,9 +1,9 @@
 
 import { useGSAP } from "@gsap/react";
-import { AdaptiveDpr, Preload, ScrollControls, useProgress } from "@react-three/drei";
+import { AdaptiveDpr, Preload, ScrollControls, useProgress, useScroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
-import { Suspense, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
 
 import { useThemeStore } from "@/stores";
@@ -14,6 +14,96 @@ import ProgressLoader from "./ProgressLoader";
 import { ScrollHint } from "./ScrollHint";
 import ThemeSwitcher from "./ThemeSwitcher";
 // import {Perf} from "r3f-perf"
+
+const isEditableScrollTarget = (target: EventTarget | null) => {
+  if (typeof HTMLElement === "undefined" || !(target instanceof HTMLElement)) return false;
+
+  return Boolean(
+    target.closest('input, textarea, select, button, [contenteditable="true"], [role="slider"]')
+  );
+};
+
+const ScrollInputBridge = () => {
+  const scroll = useScroll();
+  const touchY = useRef<number | null>(null);
+
+  useEffect(() => {
+    const scrollEl = scroll?.el;
+    if (!scrollEl) return;
+
+    const applyDelta = (delta: number) => {
+      const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
+      if (maxScroll <= 0 || delta === 0) return false;
+
+      const next = Math.max(0, Math.min(maxScroll, scrollEl.scrollTop + delta));
+      if (next === scrollEl.scrollTop) return false;
+
+      scrollEl.scrollTop = next;
+      return true;
+    };
+
+    const shouldLetNativeScroll = (target: EventTarget | null) =>
+      target instanceof Node && scrollEl.contains(target);
+
+    const onWheel = (event: WheelEvent) => {
+      if (shouldLetNativeScroll(event.target) || isEditableScrollTarget(event.target)) return;
+      if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
+
+      if (applyDelta(event.deltaY)) event.preventDefault();
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isEditableScrollTarget(event.target)) return;
+
+      const page = scrollEl.clientHeight * 0.85;
+      const keyDelta: Record<string, number> = {
+        ArrowDown: 64,
+        ArrowUp: -64,
+        PageDown: page,
+        PageUp: -page,
+        Home: -scrollEl.scrollTop,
+        End: scrollEl.scrollHeight,
+        " ": event.shiftKey ? -page : page,
+      };
+
+      const delta = keyDelta[event.key];
+      if (delta !== undefined && applyDelta(delta)) event.preventDefault();
+    };
+
+    const onTouchStart = (event: TouchEvent) => {
+      if (shouldLetNativeScroll(event.target) || isEditableScrollTarget(event.target)) return;
+      touchY.current = event.touches[0]?.clientY ?? null;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      if (shouldLetNativeScroll(event.target) || isEditableScrollTarget(event.target)) return;
+
+      const currentY = event.touches[0]?.clientY ?? null;
+      if (touchY.current === null || currentY === null) {
+        touchY.current = currentY;
+        return;
+      }
+
+      const delta = touchY.current - currentY;
+      touchY.current = currentY;
+      if (applyDelta(delta)) event.preventDefault();
+    };
+
+    window.addEventListener("wheel", onWheel, { capture: true, passive: false });
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("touchstart", onTouchStart, { capture: true, passive: true });
+    window.addEventListener("touchmove", onTouchMove, { capture: true, passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", onWheel, { capture: true });
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("touchstart", onTouchStart, { capture: true });
+      window.removeEventListener("touchmove", onTouchMove, { capture: true });
+    };
+  }, [scroll]);
+
+  return null;
+};
 
 const CanvasLoader = (props: { children: React.ReactNode }) => {
   const ref= useRef<HTMLDivElement>(null);
@@ -79,7 +169,14 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
           <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
 
-            <ScrollControls pages={4} damping={0.4} maxSpeed={1} distance={1} style={{ zIndex: 1 }}>
+            <ScrollControls
+              pages={4}
+              damping={0.4}
+              maxSpeed={1}
+              distance={1}
+              style={{ zIndex: 1, touchAction: "pan-y", overscrollBehaviorY: "contain" }}
+            >
+              <ScrollInputBridge />
               {props.children}
               <Preloader />
             </ScrollControls>
