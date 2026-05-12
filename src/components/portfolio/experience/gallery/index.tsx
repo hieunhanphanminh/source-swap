@@ -8,7 +8,11 @@ import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Wanderer } from "../../models/Wanderer";
 import Aurora from "../../models/Aurora";
+import CloudContainer from "../../models/Cloud";
+import SakuraPetals from "../../models/SakuraPetals";
 import FloatingHearts from "./FloatingHearts";
+
+const ROMANTIC_CLOUD_COLORS = ["#ffb3d1", "#ffcfa8", "#d9b8ff", "#ff9ec7", "#ffae7a", "#ffb3d1"];
 import GalleryTile from "./GalleryTile";
 import { TouchPanControls } from "../projects/TouchPanControls";
 
