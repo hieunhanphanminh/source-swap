@@ -170,17 +170,17 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         {/* Caption (title under the frame) */}
         <Text
           {...captionProps}
-          position={[-TILE_W / 2 + 0.1, -1.5, 0.05]}
+          position={[-TILE_W / 2 + 0.1, -TILE_H / 2, 0.05]}
           anchorX="left"
           anchorY="bottom"
-          maxWidth={4}
-          fontSize={0.48}
+          maxWidth={TILE_W - 0.2}
+          fontSize={0.42}
         >
           {item.caption}
         </Text>
 
         {/* Date / label badge above frame */}
-        <group position={[-TILE_W / 2 + 0.55, 1.5, 0.01]}>
+        <group position={[-TILE_W / 2 + 0.55, TILE_H / 2 + 0.2, 0.01]}>
           <mesh>
             <planeGeometry args={[1.7, 0.4, 1]} />
             <meshBasicMaterial color="#ff9bbf" transparent opacity={0.18} />
@@ -196,15 +196,15 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
           {...metaProps}
           color="#fff5f5"
           fillOpacity={0}
-          maxWidth={3.8}
-          position={[-TILE_W / 2 + 0.1, -1.85, 0.05]}
+          maxWidth={TILE_W - 0.2}
+          position={[-TILE_W / 2 + 0.1, -TILE_H / 2 - 0.35, 0.05]}
           fontSize={0.18}
         >
           {item.subtitle}
         </Text>
 
         {/* PLAY badge — visible on hover for video tiles */}
-        <group position={[TILE_W / 2 - 0.55, 1.5, 0.05]} scale={[0, 0, 1]}>
+        <group position={[TILE_W / 2 - 0.55, TILE_H / 2 + 0.2, 0.05]} scale={[0, 0, 1]}>
           <mesh>
             <planeGeometry args={[1, 0.4, 1]} />
             <meshBasicMaterial color="#ff5d8f" />
