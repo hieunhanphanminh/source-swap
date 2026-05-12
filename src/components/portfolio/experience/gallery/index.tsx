@@ -68,10 +68,13 @@ const Gallery = () => {
   // Black sky while the gallery portal is active; restore on exit.
   useEffect(() => {
     if (!isActive) return;
-    const prev = scene.background;
+    const prevBg = scene.background;
+    const prevFog = scene.fog;
     scene.background = new THREE.Color(0x000000);
+    scene.fog = null;
     return () => {
-      scene.background = prev;
+      scene.background = prevBg;
+      scene.fog = prevFog;
     };
   }, [isActive, scene]);
 
