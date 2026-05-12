@@ -6,7 +6,7 @@ import gsap from "gsap";
 import { Suspense, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
 
-import { useThemeStore } from "@/stores";
+import { usePortalStore, useThemeStore } from "@/stores";
 
 import AwwardsBadge from "./AwwardsBadge";
 import Preloader from "./Preloader";
@@ -25,11 +25,21 @@ const isEditableScrollTarget = (target: EventTarget | null) => {
 
 const ScrollInputBridge = () => {
   const scroll = useScroll();
+  const activePortalId = usePortalStore((state) => state.activePortalId);
   const touchY = useRef<number | null>(null);
 
   useEffect(() => {
     const scrollEl = scroll?.el;
-    if (!scrollEl) return;
+    if (!scrollEl || activePortalId) {
+      touchY.current = null;
+      return;
+    }
+
+    const normalizeWheelDelta = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) return event.deltaY * 32;
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) return event.deltaY * scrollEl.clientHeight;
+      return event.deltaY;
+    };
 
     const applyDelta = (delta: number) => {
       const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
@@ -42,14 +52,11 @@ const ScrollInputBridge = () => {
       return true;
     };
 
-    const shouldLetNativeScroll = (target: EventTarget | null) =>
-      target instanceof Node && scrollEl.contains(target);
-
     const onWheel = (event: WheelEvent) => {
-      if (shouldLetNativeScroll(event.target) || isEditableScrollTarget(event.target)) return;
+      if (isEditableScrollTarget(event.target)) return;
       if (Math.abs(event.deltaY) < Math.abs(event.deltaX)) return;
 
-      if (applyDelta(event.deltaY)) event.preventDefault();
+      if (applyDelta(normalizeWheelDelta(event))) event.preventDefault();
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -71,12 +78,12 @@ const ScrollInputBridge = () => {
     };
 
     const onTouchStart = (event: TouchEvent) => {
-      if (shouldLetNativeScroll(event.target) || isEditableScrollTarget(event.target)) return;
+      if (isEditableScrollTarget(event.target)) return;
       touchY.current = event.touches[0]?.clientY ?? null;
     };
 
     const onTouchMove = (event: TouchEvent) => {
-      if (shouldLetNativeScroll(event.target) || isEditableScrollTarget(event.target)) return;
+      if (isEditableScrollTarget(event.target)) return;
 
       const currentY = event.touches[0]?.clientY ?? null;
       if (touchY.current === null || currentY === null) {
@@ -100,7 +107,7 @@ const ScrollInputBridge = () => {
       window.removeEventListener("touchstart", onTouchStart, { capture: true });
       window.removeEventListener("touchmove", onTouchMove, { capture: true });
     };
-  }, [scroll]);
+  }, [scroll, activePortalId]);
 
   return null;
 };
