@@ -125,7 +125,7 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
       .to(mediaMesh.scale, { y: hovered ? 1.05 : 1, x: hovered ? 1.05 : 1 }, 0)
       .to((mediaMesh as THREE.Mesh).material, { opacity: hovered ? 1 : 0.92 }, 0)
       .to(badge.scale, { x: hovered && item.type === "video" ? 1 : 0, y: hovered && item.type === "video" ? 1 : 0 }, 0);
-  }, [hovered, item.type]);
+  }, [hovered, item.type, TILE_H]);
 
   useEffect(() => {
     if (groupRef.current) {
