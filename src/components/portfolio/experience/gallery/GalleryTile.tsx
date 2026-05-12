@@ -107,7 +107,7 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
     if (!groupRef.current) return;
     hoverAnimRef.current?.kill();
 
-    const [mediaMesh, caption, dateGroup, subtitle, badge] = groupRef.current.children;
+    const [, mediaMesh, caption, dateGroup, subtitle, badge] = groupRef.current.children;
 
     hoverAnimRef.current = gsap.timeline();
     hoverAnimRef.current
