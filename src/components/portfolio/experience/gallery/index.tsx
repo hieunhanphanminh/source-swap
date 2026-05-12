@@ -95,6 +95,11 @@ const Gallery = () => {
         position={new THREE.Vector3(0, -1, -1)}
       />
 
+      {/* Aurora veil — substitutes the cloud volumes used in the hero */}
+      <Suspense fallback={null}>
+        <Aurora />
+      </Suspense>
+
       {/* Floating heart-bokeh discs in the distance */}
       {Array.from({ length: 14 }).map((_, i) => {
         const a = (i / 14) * Math.PI * 2;
