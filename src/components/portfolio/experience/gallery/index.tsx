@@ -22,7 +22,6 @@ const GalleryCarousel = () => {
   };
 
   const tiles = useMemo(() => {
-    const fov = Math.PI;
     const distance = 13;
     const count = GALLERY_ITEMS.length;
     const fovFull = Math.PI * 2;
