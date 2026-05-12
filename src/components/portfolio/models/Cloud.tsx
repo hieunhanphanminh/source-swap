@@ -1,12 +1,24 @@
 import { Cloud, Clouds } from "@react-three/drei";
 import * as THREE from "three";
 
+// Romantic sunset palette — pink, peach, lavender, warm orange
+const CLOUD_COLORS = {
+  pink: "#ffb3d1",
+  peach: "#ffcfa8",
+  lavender: "#d9b8ff",
+  orange: "#ffae7a",
+  blush: "#ff9ec7",
+};
+
 const CloudContainer = () => {
   return (
-    <Clouds material={THREE.MeshBasicMaterial}
+    <Clouds
+      material={THREE.MeshBasicMaterial}
       position={[0, -5, 0]}
-      frustumCulled={false}>
-      <Cloud seed={1}
+      frustumCulled={false}
+    >
+      <Cloud
+        seed={1}
         segments={1}
         concentrate="inside"
         bounds={[10, 10, 10]}
@@ -17,7 +29,9 @@ const CloudContainer = () => {
         volume={2}
         speed={0.2}
         fade={5}
-        />
+        color={CLOUD_COLORS.pink}
+        opacity={0.85}
+      />
       <Cloud
         seed={3}
         segments={1}
@@ -29,8 +43,10 @@ const CloudContainer = () => {
         scale={1}
         volume={2}
         fade={3}
-        speed={0.1}/>
-
+        speed={0.1}
+        color={CLOUD_COLORS.peach}
+        opacity={0.85}
+      />
       <Cloud
         seed={4}
         segments={1}
@@ -41,8 +57,10 @@ const CloudContainer = () => {
         smallestVolume={2}
         scale={2}
         speed={0.2}
-        volume={3}/>
-
+        volume={3}
+        color={CLOUD_COLORS.lavender}
+        opacity={0.8}
+      />
       <Cloud
         seed={5}
         segments={1}
@@ -54,8 +72,10 @@ const CloudContainer = () => {
         scale={2}
         volume={2}
         fade={0.1}
-        speed={0.1}/>
-
+        speed={0.1}
+        color={CLOUD_COLORS.blush}
+        opacity={0.85}
+      />
       <Cloud
         seed={6}
         segments={1}
@@ -67,8 +87,10 @@ const CloudContainer = () => {
         scale={4}
         volume={3}
         fade={0.1}
-        speed={0.1}/>
-
+        speed={0.1}
+        color={CLOUD_COLORS.orange}
+        opacity={0.8}
+      />
       <Cloud
         seed={7}
         segments={1}
@@ -80,8 +102,12 @@ const CloudContainer = () => {
         scale={3}
         volume={3}
         fade={0.1}
-        speed={0.1}/>
-    </Clouds>);
-}
+        speed={0.1}
+        color={CLOUD_COLORS.pink}
+        opacity={0.8}
+      />
+    </Clouds>
+  );
+};
 
 export default CloudContainer;
