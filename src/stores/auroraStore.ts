@@ -10,13 +10,16 @@ export interface AuroraLayerConfig {
 
 // Mirrors the cloud volumes in src/components/portfolio/models/Cloud.tsx
 // (Clouds container is at y=-5; positions below already include that offset).
+// Tall vertical "aurora curtains" arranged in a ring above the gallery camera.
+// The gallery portal repositions the camera to roughly y = -39, so y values
+// here (~-26..-22) place the curtains overhead.
 export const DEFAULT_LAYERS: AuroraLayerConfig[] = [
-  { pos: [-1, -5, 0],   scale: [22, 11, 1], color: "#ff9ec7", opacity: 0.55, speed: 0.05 },
-  { pos: [2, -5, 2],    scale: [14, 7, 1],  color: "#c98bff", opacity: 0.45, speed: 0.08 },
-  { pos: [-10, -15, 4], scale: [20, 10, 1], color: "#ff5d8f", opacity: 0.4,  speed: 0.04 },
-  { pos: [6, -8, 8],    scale: [16, 8, 1],  color: "#ffb3d1", opacity: 0.35, speed: 0.07 },
-  { pos: [0, -25, 20],  scale: [34, 14, 1], color: "#ffd1e6", opacity: 0.5,  speed: 0.03 },
-  { pos: [10, -20, -5], scale: [24, 12, 1], color: "#ffa3c4", opacity: 0.4,  speed: 0.06 },
+  { pos: [  0, -22, -14], scale: [10, 28, 1], color: "#ff9ec7", opacity: 0.65, speed: 0 },
+  { pos: [ 12, -24,  -6], scale: [ 9, 24, 1], color: "#c98bff", opacity: 0.55, speed: 0 },
+  { pos: [ 14, -26,   8], scale: [ 9, 26, 1], color: "#ff5d8f", opacity: 0.5,  speed: 0 },
+  { pos: [  0, -22,  14], scale: [10, 30, 1], color: "#ffb3d1", opacity: 0.6,  speed: 0 },
+  { pos: [-14, -26,   8], scale: [ 9, 26, 1], color: "#ffd1e6", opacity: 0.55, speed: 0 },
+  { pos: [-12, -24,  -6], scale: [ 9, 24, 1], color: "#ffa3c4", opacity: 0.5,  speed: 0 },
 ];
 
 interface AuroraState {

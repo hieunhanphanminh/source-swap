@@ -22,11 +22,11 @@ const GalleryCarousel = () => {
   };
 
   const tiles = useMemo(() => {
-    const fov = Math.PI;
     const distance = 13;
     const count = GALLERY_ITEMS.length;
+    const fovFull = Math.PI * 2;
     return GALLERY_ITEMS.map((item, i) => {
-      const angle = (fov / count) * i;
+      const angle = (fovFull / count) * i;
       const z = -distance * Math.sin(angle);
       const x = -distance * Math.cos(angle);
       const rotY = Math.PI / 2 - angle;
@@ -49,7 +49,7 @@ const GalleryCarousel = () => {
 };
 
 const Gallery = () => {
-  const { camera } = useThree();
+  const { camera, scene } = useThree();
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
   const data = useScroll();
 
@@ -64,11 +64,21 @@ const Gallery = () => {
     }
   }, [isActive]);
 
+  // Black sky while the gallery portal is active; restore on exit.
+  useEffect(() => {
+    if (!isActive) return;
+    const prev = scene.background;
+    scene.background = new THREE.Color(0x000000);
+    return () => {
+      scene.background = prev;
+    };
+  }, [isActive, scene]);
+
   useFrame((state, delta) => {
     if (isActive && !isMobile) {
       camera.rotation.y = THREE.MathUtils.lerp(
         camera.rotation.y,
-        -(state.pointer.x * Math.PI) / 4,
+        -(state.pointer.x * Math.PI),
         0.03,
       );
       camera.position.z = THREE.MathUtils.damp(
@@ -83,7 +93,7 @@ const Gallery = () => {
   return (
     <group>
       {/* Romantic remix — warm rose ambient + pink/lavender rim lights */}
-      <ambientLight intensity={0.55} color="#ffd8e6" />
+      <ambientLight intensity={0.35} color="#ffd8e6" />
       <pointLight position={[6, 4, 6]} intensity={1.2} color="#ff8fb1" distance={40} />
       <pointLight position={[-6, -2, 4]} intensity={0.9} color="#c98bff" distance={40} />
       <pointLight position={[0, -8, -10]} intensity={0.6} color="#ff5d8f" distance={50} />
