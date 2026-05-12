@@ -8,6 +8,7 @@ import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Wanderer } from "../../models/Wanderer";
 import Aurora from "../../models/Aurora";
+import FloatingHearts from "./FloatingHearts";
 import GalleryTile from "./GalleryTile";
 import { TouchPanControls } from "../projects/TouchPanControls";
 
