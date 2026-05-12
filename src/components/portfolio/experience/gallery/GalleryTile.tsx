@@ -6,6 +6,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 
 import { usePortalStore } from "@/stores";
+import { useGalleryLightboxStore } from "@/stores/galleryLightboxStore";
 import { GalleryItem } from "@/constants/gallery";
 
 interface GalleryTileProps {
@@ -116,13 +117,12 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
     }
   }, [isActive]);
 
+  const openLightbox = useGalleryLightboxStore((s) => s.open);
+
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
-    if (item.type === "video" && videoElRef.current) {
-      const v = videoElRef.current;
-      if (v.paused) v.play().catch(() => {});
-      else v.pause();
-    }
+    if (videoElRef.current) videoElRef.current.pause();
+    openLightbox(item);
   };
 
   const activeTex = item.type === "video" && videoTex && hovered ? videoTex : tex;
@@ -131,7 +131,11 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
     <group
       position={position}
       rotation={rotation}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+        openLightbox(item);
+      }}
       onPointerOver={() => !isMobile && isActive && setDesktopHovered(true)}
       onPointerOut={() => !isMobile && isActive && setDesktopHovered(false)}
     >
