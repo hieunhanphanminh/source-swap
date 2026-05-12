@@ -18,8 +18,11 @@ interface GalleryTileProps {
   onClick: () => void;
 }
 
-const TILE_W = 4.2;
-const TILE_H = 2.6;
+const TARGET_AREA = 11; // ~4.2 * 2.6
+const W_MIN = 2.4;
+const W_MAX = 4.8;
+const H_MIN = 2.0;
+const H_MAX = 3.6;
 
 const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: GalleryTileProps) => {
   const groupRef = useRef<THREE.Group>(null);
@@ -37,6 +40,23 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
     tex.generateMipmaps = false;
     (tex as THREE.Texture).colorSpace = THREE.SRGBColorSpace;
   }
+
+  // Size the plane to the media's natural aspect so it doesn't squish/stretch.
+  const [dims, setDims] = useState<[number, number]>([4.2, 2.6]);
+  useEffect(() => {
+    const img = (tex as THREE.Texture)?.image as { width?: number; height?: number } | undefined;
+    if (!img?.width || !img?.height) return;
+    const aspect = img.width / img.height;
+    // Solve w*h = AREA with w/h = aspect → w = sqrt(AREA*aspect), h = sqrt(AREA/aspect)
+    let w = Math.sqrt(TARGET_AREA * aspect);
+    let h = Math.sqrt(TARGET_AREA / aspect);
+    if (w > W_MAX) { w = W_MAX; h = w / aspect; }
+    if (h > H_MAX) { h = H_MAX; w = h * aspect; }
+    if (w < W_MIN) { w = W_MIN; h = w / aspect; }
+    if (h < H_MIN) { h = H_MIN; w = h * aspect; }
+    setDims([w, h]);
+  }, [tex]);
+  const [TILE_W, TILE_H] = dims;
 
   // Lazy video texture — only created on first hover.
   const [videoTex, setVideoTex] = useState<THREE.VideoTexture | null>(null);
