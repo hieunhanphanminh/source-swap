@@ -41,6 +41,7 @@ const TimelinePoint = ({
     ...textProps,
     font: "./soria-font.ttf",
     maxWidth: 2.4,
+    anchorY: "top" as const,
   }), [textProps]);
 
   return (
@@ -51,15 +52,15 @@ const TimelinePoint = ({
       </Box>
       <group>
         <group position={getPoint}>
-          <Text {...textProps} fontSize={0.18} position={[-diff / 2, 0, 0]}>
+          <Text {...textProps} anchorY="bottom" fontSize={0.18} position={[-diff / 2, 0.2, 0]}>
             {point.year}
           </Text>
-          <group position={[0, -0.32, 0]}>
+          <group position={[0, -0.1, 0]}>
             <Text {...titleProps} fontSize={0.32} maxWidth={2.4} position={[0, -diff / 2, 0]} lineHeight={1.1}>
               {point.title}
             </Text>
             {point.subtitle && (
-              <Text {...textProps} fontSize={0.14} maxWidth={2.4} position={[0, -0.55 - diff, 0]} lineHeight={1.2}>
+              <Text {...textProps} anchorY="top" fontSize={0.14} maxWidth={2.4} position={[0, -0.95 - diff, 0]} lineHeight={1.2}>
                 {point.subtitle}
               </Text>
             )}
