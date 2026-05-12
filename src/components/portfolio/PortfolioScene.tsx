@@ -1,6 +1,7 @@
 import CanvasLoader from "./common/CanvasLoader";
 import ScrollWrapper from "./common/ScrollWrapper";
 import Experience from "./experience";
+import AuroraDebugPanel from "./experience/gallery/AuroraDebugPanel";
 import Footer from "./footer";
 import Hero from "./hero";
 import { usePortalStore } from "@/stores";
@@ -69,6 +70,7 @@ export default function PortfolioScene() {
           <Footer />
         </ScrollWrapper>
       </CanvasLoader>
+      <AuroraDebugPanel />
     </>
   );
 }
