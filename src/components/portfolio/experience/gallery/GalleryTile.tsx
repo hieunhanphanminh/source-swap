@@ -18,8 +18,11 @@ interface GalleryTileProps {
   onClick: () => void;
 }
 
-const TILE_W = 4.2;
-const TILE_H = 2.6;
+const TARGET_AREA = 11; // ~4.2 * 2.6
+const W_MIN = 2.4;
+const W_MAX = 4.8;
+const H_MIN = 2.0;
+const H_MAX = 3.6;
 
 const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: GalleryTileProps) => {
   const groupRef = useRef<THREE.Group>(null);
@@ -37,6 +40,23 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
     tex.generateMipmaps = false;
     (tex as THREE.Texture).colorSpace = THREE.SRGBColorSpace;
   }
+
+  // Size the plane to the media's natural aspect so it doesn't squish/stretch.
+  const [dims, setDims] = useState<[number, number]>([4.2, 2.6]);
+  useEffect(() => {
+    const img = (tex as THREE.Texture)?.image as { width?: number; height?: number } | undefined;
+    if (!img?.width || !img?.height) return;
+    const aspect = img.width / img.height;
+    // Solve w*h = AREA with w/h = aspect → w = sqrt(AREA*aspect), h = sqrt(AREA/aspect)
+    let w = Math.sqrt(TARGET_AREA * aspect);
+    let h = Math.sqrt(TARGET_AREA / aspect);
+    if (w > W_MAX) { w = W_MAX; h = w / aspect; }
+    if (h > H_MAX) { h = H_MAX; w = h * aspect; }
+    if (w < W_MIN) { w = W_MIN; h = w / aspect; }
+    if (h < H_MIN) { h = H_MIN; w = h * aspect; }
+    setDims([w, h]);
+  }, [tex]);
+  const [TILE_W, TILE_H] = dims;
 
   // Lazy video texture — only created on first hover.
   const [videoTex, setVideoTex] = useState<THREE.VideoTexture | null>(null);
@@ -98,14 +118,14 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         y: hovered ? 1.3 : 1,
         z: hovered ? 1.3 : 1,
       }, 0)
-      .to(caption.position, { y: hovered ? -1.7 : -1.5 }, 0)
+      .to(caption.position, { y: hovered ? -TILE_H / 2 - 0.2 : -TILE_H / 2 }, 0)
       .to(subtitle, { fillOpacity: hovered ? 1 : 0, duration: 0.4 }, 0)
-      .to(subtitle.position, { y: hovered ? -2.0 : -1.85 }, 0)
-      .to(dateGroup.position, { y: hovered ? 1.85 : 1.5 }, 0)
+      .to(subtitle.position, { y: hovered ? -TILE_H / 2 - 0.5 : -TILE_H / 2 - 0.35 }, 0)
+      .to(dateGroup.position, { y: hovered ? TILE_H / 2 + 0.35 : TILE_H / 2 + 0.2 }, 0)
       .to(mediaMesh.scale, { y: hovered ? 1.05 : 1, x: hovered ? 1.05 : 1 }, 0)
       .to((mediaMesh as THREE.Mesh).material, { opacity: hovered ? 1 : 0.92 }, 0)
       .to(badge.scale, { x: hovered && item.type === "video" ? 1 : 0, y: hovered && item.type === "video" ? 1 : 0 }, 0);
-  }, [hovered, item.type]);
+  }, [hovered, item.type, TILE_H]);
 
   useEffect(() => {
     if (groupRef.current) {
@@ -150,17 +170,17 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         {/* Caption (title under the frame) */}
         <Text
           {...captionProps}
-          position={[-TILE_W / 2 + 0.1, -1.5, 0.05]}
+          position={[-TILE_W / 2 + 0.1, -TILE_H / 2, 0.05]}
           anchorX="left"
           anchorY="bottom"
-          maxWidth={4}
-          fontSize={0.48}
+          maxWidth={TILE_W - 0.2}
+          fontSize={0.42}
         >
           {item.caption}
         </Text>
 
         {/* Date / label badge above frame */}
-        <group position={[-TILE_W / 2 + 0.55, 1.5, 0.01]}>
+        <group position={[-TILE_W / 2 + 0.55, TILE_H / 2 + 0.2, 0.01]}>
           <mesh>
             <planeGeometry args={[1.7, 0.4, 1]} />
             <meshBasicMaterial color="#ff9bbf" transparent opacity={0.18} />
@@ -176,15 +196,15 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
           {...metaProps}
           color="#fff5f5"
           fillOpacity={0}
-          maxWidth={3.8}
-          position={[-TILE_W / 2 + 0.1, -1.85, 0.05]}
+          maxWidth={TILE_W - 0.2}
+          position={[-TILE_W / 2 + 0.1, -TILE_H / 2 - 0.35, 0.05]}
           fontSize={0.18}
         >
           {item.subtitle}
         </Text>
 
         {/* PLAY badge — visible on hover for video tiles */}
-        <group position={[TILE_W / 2 - 0.55, 1.5, 0.05]} scale={[0, 0, 1]}>
+        <group position={[TILE_W / 2 - 0.55, TILE_H / 2 + 0.2, 0.05]} scale={[0, 0, 1]}>
           <mesh>
             <planeGeometry args={[1, 0.4, 1]} />
             <meshBasicMaterial color="#ff5d8f" />
