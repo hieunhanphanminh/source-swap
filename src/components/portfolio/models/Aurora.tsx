@@ -1,72 +1,118 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
+import { useAuroraStore, AuroraLayerConfig } from "@/stores/auroraStore";
 
 /**
- * Aurora — drifting textured planes used as a romantic substitute for the
- * cloud volumes elsewhere in the scene. Multiple layered planes with additive
- * blending give a soft, glowing aurora veil across the gallery backdrop.
+ * Aurora — drifting textured planes that substitute the cloud volumes from
+ * Cloud.tsx. Layer positions/scales mirror the original Clouds composition so
+ * the gallery backdrop matches the hero visually.
+ *
+ * Optimizations:
+ *  - Single shared texture (via useLoader cache).
+ *  - Per-layer material/geometry created once, disposed on unmount (no leaks
+ *    when switching scenes).
+ *  - Animation mutates material.map.offset via a per-layer Vector2 — no
+ *    per-frame allocations, no texture cloning.
  */
-const LAYERS = [
-  { pos: [-1, 3, -8] as [number, number, number], scale: [22, 10, 1] as [number, number, number], color: "#ff9ec7", opacity: 0.55, speed: 0.05 },
-  { pos: [2, 1.5, -10] as [number, number, number], scale: [26, 9, 1] as [number, number, number], color: "#c98bff", opacity: 0.45, speed: 0.08 },
-  { pos: [-3, -2, -6] as [number, number, number], scale: [18, 7, 1] as [number, number, number], color: "#ff5d8f", opacity: 0.35, speed: 0.04 },
-  { pos: [4, -4, -12] as [number, number, number], scale: [30, 12, 1] as [number, number, number], color: "#ffd1e6", opacity: 0.4, speed: 0.06 },
-];
+
+const SHARED_GEOMETRY_KEY = Symbol.for("aurora.plane.geometry");
 
 const AuroraPlane = ({
   texture,
-  pos,
-  scale,
-  color,
-  opacity,
-  speed,
+  layer,
+  index,
 }: {
   texture: THREE.Texture;
-  pos: [number, number, number];
-  scale: [number, number, number];
-  color: string;
-  opacity: number;
-  speed: number;
+  layer: AuroraLayerConfig;
+  index: number;
 }) => {
-  const ref = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const globalOpacity = useAuroraStore((s) => s.globalOpacity);
+  const globalSpeed = useAuroraStore((s) => s.globalSpeed);
+
+  // Each layer needs its own offset so they drift independently, but we keep
+  // the underlying image data shared (clone is shallow on the GPU side).
   const tex = useMemo(() => {
     const t = texture.clone();
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.offset = new THREE.Vector2(Math.random(), Math.random());
     t.needsUpdate = true;
     return t;
   }, [texture]);
 
-  useFrame((_state, delta) => {
+  const material = useMemo(
+    () =>
+      new THREE.MeshBasicMaterial({
+        map: tex,
+        color: new THREE.Color(layer.color),
+        transparent: true,
+        opacity: layer.opacity * globalOpacity,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tex],
+  );
+
+  // Sync material when layer/global props change (no recreation)
+  useEffect(() => {
+    material.color.set(layer.color);
+    material.opacity = layer.opacity * globalOpacity;
+    material.needsUpdate = true;
+  }, [layer.color, layer.opacity, globalOpacity, material]);
+
+  // Cleanup GPU resources when this layer unmounts (scene switches)
+  useEffect(() => {
+    return () => {
+      material.dispose();
+      tex.dispose();
+    };
+  }, [material, tex]);
+
+  const basePosY = layer.pos[1];
+  useFrame((_s, delta) => {
+    const speed = layer.speed * globalSpeed;
     tex.offset.x += delta * speed;
     tex.offset.y += delta * speed * 0.3;
-    if (ref.current) {
-      ref.current.position.y = pos[1] + Math.sin(performance.now() * 0.0002 * speed * 10) * 0.3;
+    if (meshRef.current) {
+      meshRef.current.position.y =
+        basePosY + Math.sin(performance.now() * 0.0002 * (speed * 10 + 0.001)) * 0.4;
     }
   });
 
   return (
-    <mesh ref={ref} position={pos} scale={scale}>
-      <planeGeometry args={[1, 1]} />
-      <meshBasicMaterial
-        map={tex}
-        color={color}
-        transparent
-        opacity={opacity}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
+    <mesh
+      ref={meshRef}
+      position={layer.pos}
+      scale={layer.scale}
+      material={material}
+      // Reuse a single shared 1x1 plane geometry across every layer/instance
+      geometry={getSharedPlaneGeometry()}
+      frustumCulled={false}
+      renderOrder={-1 - index}
+    />
   );
 };
 
+// Module-level shared geometry — created once for the whole app
+function getSharedPlaneGeometry(): THREE.PlaneGeometry {
+  const g = (globalThis as any)[SHARED_GEOMETRY_KEY] as THREE.PlaneGeometry | undefined;
+  if (g) return g;
+  const created = new THREE.PlaneGeometry(1, 1);
+  (globalThis as any)[SHARED_GEOMETRY_KEY] = created;
+  return created;
+}
+
 const Aurora = () => {
   const texture = useLoader(THREE.TextureLoader, "/textures/aurora_texture.png");
+  const layers = useAuroraStore((s) => s.layers);
+
   return (
-    <group position={[0, 0, 0]} frustumCulled={false}>
-      {LAYERS.map((l, i) => (
-        <AuroraPlane key={i} texture={texture} {...l} />
+    <group frustumCulled={false}>
+      {layers.map((layer, i) => (
+        <AuroraPlane key={i} texture={texture} layer={layer} index={i} />
       ))}
     </group>
   );
