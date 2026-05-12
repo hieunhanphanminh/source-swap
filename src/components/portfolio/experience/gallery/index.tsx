@@ -121,6 +121,11 @@ const Gallery = () => {
       {/* Drifting hearts + glow halos around the gallery camera */}
       <FloatingHearts centerY={-39} />
 
+      {/* Romantic dreamy add-ons — tinted clouds + sakura petals */}
+      <group position={[0, -39, 0]}>
+        <CloudContainer colors={ROMANTIC_CLOUD_COLORS} opacity={0.55} />
+        <SakuraPetals count={50} centerY={0} radius={18} height={22} />
+      </group>
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls />}
     </group>
