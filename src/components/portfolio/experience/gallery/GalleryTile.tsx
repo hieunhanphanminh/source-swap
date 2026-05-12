@@ -118,10 +118,10 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         y: hovered ? 1.3 : 1,
         z: hovered ? 1.3 : 1,
       }, 0)
-      .to(caption.position, { y: hovered ? -1.7 : -1.5 }, 0)
+      .to(caption.position, { y: hovered ? -TILE_H / 2 - 0.2 : -TILE_H / 2 }, 0)
       .to(subtitle, { fillOpacity: hovered ? 1 : 0, duration: 0.4 }, 0)
-      .to(subtitle.position, { y: hovered ? -2.0 : -1.85 }, 0)
-      .to(dateGroup.position, { y: hovered ? 1.85 : 1.5 }, 0)
+      .to(subtitle.position, { y: hovered ? -TILE_H / 2 - 0.5 : -TILE_H / 2 - 0.35 }, 0)
+      .to(dateGroup.position, { y: hovered ? TILE_H / 2 + 0.35 : TILE_H / 2 + 0.2 }, 0)
       .to(mediaMesh.scale, { y: hovered ? 1.05 : 1, x: hovered ? 1.05 : 1 }, 0)
       .to((mediaMesh as THREE.Mesh).material, { opacity: hovered ? 1 : 0.92 }, 0)
       .to(badge.scale, { x: hovered && item.type === "video" ? 1 : 0, y: hovered && item.type === "video" ? 1 : 0 }, 0);
