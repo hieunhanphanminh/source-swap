@@ -8,6 +8,7 @@ import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Wanderer } from "../../models/Wanderer";
 import Aurora from "../../models/Aurora";
+import FloatingHearts from "./FloatingHearts";
 import GalleryTile from "./GalleryTile";
 import { TouchPanControls } from "../projects/TouchPanControls";
 
@@ -67,10 +68,13 @@ const Gallery = () => {
   // Black sky while the gallery portal is active; restore on exit.
   useEffect(() => {
     if (!isActive) return;
-    const prev = scene.background;
+    const prevBg = scene.background;
+    const prevFog = scene.fog;
     scene.background = new THREE.Color(0x000000);
+    scene.fog = null;
     return () => {
-      scene.background = prev;
+      scene.background = prevBg;
+      scene.fog = prevFog;
     };
   }, [isActive, scene]);
 
@@ -92,11 +96,11 @@ const Gallery = () => {
 
   return (
     <group>
-      {/* Romantic remix — warm rose ambient + pink/lavender rim lights */}
-      <ambientLight intensity={0.35} color="#ffd8e6" />
-      <pointLight position={[6, 4, 6]} intensity={1.2} color="#ff8fb1" distance={40} />
-      <pointLight position={[-6, -2, 4]} intensity={0.9} color="#c98bff" distance={40} />
-      <pointLight position={[0, -8, -10]} intensity={0.6} color="#ff5d8f" distance={50} />
+      {/* Romantic remix — dim ambient + pink/lavender rim lights against black */}
+      <ambientLight intensity={0.25} color="#ffd8e6" />
+      <pointLight position={[6, 4, 6]} intensity={1.0} color="#ff8fb1" distance={40} />
+      <pointLight position={[-6, -2, 4]} intensity={0.8} color="#c98bff" distance={40} />
+      <pointLight position={[0, -8, -10]} intensity={0.5} color="#ff5d8f" distance={50} />
 
       {/* Same dreamy wanderer silhouette as Reasons, tinted by the rose lights */}
       <Wanderer
@@ -105,26 +109,13 @@ const Gallery = () => {
         position={new THREE.Vector3(0, -1, -1)}
       />
 
-      {/* Aurora veil — substitutes the cloud volumes used in the hero */}
+      {/* Aurora curtains overhead */}
       <Suspense fallback={null}>
         <Aurora />
       </Suspense>
 
-      {/* Floating heart-bokeh discs in the distance */}
-      {Array.from({ length: 14 }).map((_, i) => {
-        const a = (i / 14) * Math.PI * 2;
-        const r = 16 + (i % 3) * 4;
-        return (
-          <mesh
-            key={i}
-            position={[Math.cos(a) * r, ((i % 5) - 2) * 2, -8 - Math.sin(a) * r]}
-            rotation={[0, -a, 0]}
-          >
-            <circleGeometry args={[1.2 + (i % 4) * 0.4, 24]} />
-            <meshBasicMaterial color={i % 2 ? "#ff7aa8" : "#ffc1d6"} transparent opacity={0.08} />
-          </mesh>
-        );
-      })}
+      {/* Drifting hearts + glow halos around the gallery camera */}
+      <FloatingHearts centerY={-39} />
 
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls />}

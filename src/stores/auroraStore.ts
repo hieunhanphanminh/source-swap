@@ -13,14 +13,24 @@ export interface AuroraLayerConfig {
 // Tall vertical "aurora curtains" arranged in a ring above the gallery camera.
 // The gallery portal repositions the camera to roughly y = -39, so y values
 // here (~-26..-22) place the curtains overhead.
-export const DEFAULT_LAYERS: AuroraLayerConfig[] = [
-  { pos: [  0, -22, -14], scale: [10, 28, 1], color: "#ff9ec7", opacity: 0.65, speed: 0 },
-  { pos: [ 12, -24,  -6], scale: [ 9, 24, 1], color: "#c98bff", opacity: 0.55, speed: 0 },
-  { pos: [ 14, -26,   8], scale: [ 9, 26, 1], color: "#ff5d8f", opacity: 0.5,  speed: 0 },
-  { pos: [  0, -22,  14], scale: [10, 30, 1], color: "#ffb3d1", opacity: 0.6,  speed: 0 },
-  { pos: [-14, -26,   8], scale: [ 9, 26, 1], color: "#ffd1e6", opacity: 0.55, speed: 0 },
-  { pos: [-12, -24,  -6], scale: [ 9, 24, 1], color: "#ffa3c4", opacity: 0.5,  speed: 0 },
-];
+const RING_PALETTE = ["#ff5d8f", "#ff9ec7", "#ffb3d1", "#c98bff", "#ff79b0", "#ffd1e6"];
+const RING_COUNT = 12;
+const RING_RADIUS = 15;
+export const DEFAULT_LAYERS: AuroraLayerConfig[] = Array.from({ length: RING_COUNT }, (_, i) => {
+  const a = (i / RING_COUNT) * Math.PI * 2;
+  const x = Math.cos(a) * RING_RADIUS;
+  const z = Math.sin(a) * RING_RADIUS;
+  const y = -23 - (i % 3) * 1.5;
+  const w = 10 + (i % 4) * 0.8;
+  const h = 28 + (i % 5) * 1.5;
+  return {
+    pos: [x, y, z] as [number, number, number],
+    scale: [w, h, 1] as [number, number, number],
+    color: RING_PALETTE[i % RING_PALETTE.length],
+    opacity: 0.7,
+    speed: 0,
+  };
+});
 
 interface AuroraState {
   layers: AuroraLayerConfig[];
