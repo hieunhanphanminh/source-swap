@@ -25,8 +25,9 @@ const GalleryCarousel = () => {
     const fov = Math.PI;
     const distance = 13;
     const count = GALLERY_ITEMS.length;
+    const fovFull = Math.PI * 2;
     return GALLERY_ITEMS.map((item, i) => {
-      const angle = (fov / count) * i;
+      const angle = (fovFull / count) * i;
       const z = -distance * Math.sin(angle);
       const x = -distance * Math.cos(angle);
       const rotY = Math.PI / 2 - angle;
