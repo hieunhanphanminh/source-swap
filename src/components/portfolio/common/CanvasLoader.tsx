@@ -90,7 +90,6 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
         </Canvas>
         <ProgressLoader progress={progress} />
       </div>
-      <AwwardsBadge />
       <ThemeSwitcher />
       <ScrollHint />
     </div>
