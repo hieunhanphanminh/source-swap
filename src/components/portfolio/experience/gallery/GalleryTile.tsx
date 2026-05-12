@@ -107,7 +107,7 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
     if (!groupRef.current) return;
     hoverAnimRef.current?.kill();
 
-    const [mediaMesh, caption, dateGroup, subtitle, badge] = groupRef.current.children;
+    const [, mediaMesh, caption, dateGroup, subtitle, badge] = groupRef.current.children;
 
     hoverAnimRef.current = gsap.timeline();
     hoverAnimRef.current
@@ -160,6 +160,12 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
       onPointerOut={() => !isMobile && isActive && setDesktopHovered(false)}
     >
       <group ref={groupRef}>
+        {/* Soft pink glow halo behind the frame */}
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[TILE_W * 1.35, TILE_H * 1.35, 1]} />
+          <meshBasicMaterial color="#ff9bbf" transparent opacity={0.18} depthWrite={false} />
+        </mesh>
+
         {/* Media plane — the "photo/video frame". */}
         <mesh onClick={handleClick}>
           <planeGeometry args={[TILE_W, TILE_H, 1]} />
