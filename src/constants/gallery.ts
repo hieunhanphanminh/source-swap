@@ -20,9 +20,6 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   { id: "v-2", type: "video", src: "/videos/vid2.mp4", thumb: "/videos/thumb2.jpg", caption: "Just us, unfiltered", subtitle: "Jan 28, 2026 — favorite kind of chaos", label: "JAN 2026" },
   { id: "v-3", type: "video", src: "/videos/vid3.mp4", thumb: "/videos/thumb3.jpg", caption: "Replay-worthy", subtitle: "The clip I keep coming back to", label: "CLIP 03" },
   { id: "v-4", type: "video", src: "/videos/vid4.mp4", thumb: "/videos/thumb4.jpg", caption: "Blanket fortress", subtitle: "Dec 1, 2025 — softest evening", label: "DEC 2025" },
-  { id: "v-5", type: "video", src: "/videos/vid5.mp4", thumb: "/videos/thumb5.jpg", caption: "Wander mode on", subtitle: "Dec 6, 2025 — chasing little adventures", label: "DEC 2025" },
-  { id: "v-6", type: "video", src: "/videos/vid6.mp4", thumb: "/videos/thumb6.jpg", caption: "My always", subtitle: "Dec 7, 2025 — proof we're forever", label: "DEC 2025" },
-  { id: "v-7", type: "video", src: "/videos/vid7.mp4", thumb: "/videos/thumb7.jpg", caption: "2 a.m. magic", subtitle: "Dec 28, 2025 — quiet, glowy, ours", label: "DEC 2025" },
 ];
 
 // Backwards-compat (the floating-grid component still imports this).
