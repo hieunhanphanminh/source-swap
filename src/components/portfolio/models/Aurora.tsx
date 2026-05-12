@@ -71,12 +71,10 @@ const AuroraPlane = ({
   layer: AuroraLayerConfig;
   index: number;
 }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
   const globalOpacity = useAuroraStore((s) => s.globalOpacity);
-  const globalSpeed = useAuroraStore((s) => s.globalSpeed);
 
-  // Per-layer texture clone so each layer can drift independently. Image data
-  // stays shared on the GPU.
+  // Per-layer texture clone with a static, randomised offset so the layers
+  // don't all show the exact same crop. No drift: kept fully static.
   const tex = useMemo(() => {
     const t = texture.clone();
     t.needsUpdate = true;
@@ -85,26 +83,27 @@ const AuroraPlane = ({
     return t;
   }, [texture]);
 
+  // Material uses the texture's original colors (white tint, normal blending,
+  // no additive recolouring) — matches the look encoded in aurora_scene.gltf.
   const material = useMemo(
     () =>
       new THREE.MeshBasicMaterial({
         map: tex,
-        color: new THREE.Color(layer.color),
+        color: 0xffffff,
         transparent: true,
         opacity: layer.opacity * globalOpacity,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
+        toneMapped: false,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tex],
   );
 
   useEffect(() => {
-    material.color.set(layer.color);
     material.opacity = layer.opacity * globalOpacity;
     material.needsUpdate = true;
-  }, [layer.color, layer.opacity, globalOpacity, material]);
+  }, [layer.opacity, globalOpacity, material]);
 
   useEffect(() => {
     return () => {
@@ -113,20 +112,8 @@ const AuroraPlane = ({
     };
   }, [material, tex]);
 
-  const basePosY = layer.pos[1];
-  useFrame((_s, delta) => {
-    const speed = layer.speed * globalSpeed;
-    tex.offset.x += delta * speed;
-    tex.offset.y += delta * speed * 0.3;
-    if (meshRef.current) {
-      meshRef.current.position.y =
-        basePosY + Math.sin(performance.now() * 0.0002 * (speed * 10 + 0.001)) * 0.4;
-    }
-  });
-
   return (
     <mesh
-      ref={meshRef}
       position={layer.pos}
       scale={layer.scale}
       material={material}
