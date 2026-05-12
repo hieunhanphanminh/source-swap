@@ -8,7 +8,11 @@ import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Wanderer } from "../../models/Wanderer";
 import Aurora from "../../models/Aurora";
+import CloudContainer from "../../models/Cloud";
+import SakuraPetals from "../../models/SakuraPetals";
 import FloatingHearts from "./FloatingHearts";
+
+const ROMANTIC_CLOUD_COLORS = ["#ffb3d1", "#ffcfa8", "#d9b8ff", "#ff9ec7", "#ffae7a", "#ffb3d1"];
 import GalleryTile from "./GalleryTile";
 import { TouchPanControls } from "../projects/TouchPanControls";
 
@@ -117,6 +121,11 @@ const Gallery = () => {
       {/* Drifting hearts + glow halos around the gallery camera */}
       <FloatingHearts centerY={-39} />
 
+      {/* Romantic dreamy add-ons — tinted clouds + sakura petals */}
+      <group position={[0, -39, 0]}>
+        <CloudContainer colors={ROMANTIC_CLOUD_COLORS} opacity={0.55} />
+        <SakuraPetals count={50} centerY={0} radius={18} height={22} />
+      </group>
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls />}
     </group>
