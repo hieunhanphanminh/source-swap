@@ -69,13 +69,13 @@ const Gallery = () => {
     }
   }, [isActive]);
 
-  // Black sky while the gallery portal is active; restore on exit.
+  // Deep plum romantic sky + soft pink fog while the gallery portal is active.
   useEffect(() => {
     if (!isActive) return;
     const prevBg = scene.background;
     const prevFog = scene.fog;
-    scene.background = new THREE.Color(0x000000);
-    scene.fog = null;
+    scene.background = new THREE.Color("#0b0510");
+    scene.fog = new THREE.Fog("#1a0a1a", 18, 70);
     return () => {
       scene.background = prevBg;
       scene.fog = prevFog;
