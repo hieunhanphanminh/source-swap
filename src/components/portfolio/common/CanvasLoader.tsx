@@ -197,10 +197,11 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
               <Preloader />
             </ScrollControls>
 
-            {/* EffectComposer renders into the WebGL canvas only — DOM/UI overlays
-                (ThemeSwitcher, ScrollHint, lightbox, badges) are unaffected by bloom.
-                Bloom pass is only mounted when the gallery portal is active. */}
-            {isGalleryActive ? (
+            {/* Postprocessing only runs in the gallery portal. Hero and other
+                sections render with the renderer's native output — no bloom,
+                no AGX tone mapping, no vignette, no grain — restoring the
+                original color/lighting look. */}
+            {isGalleryActive && (
               <EffectComposer key="fx-gallery" multisampling={0} enableNormalPass={false}>
                 <Bloom
                   intensity={0.3}
@@ -209,12 +210,6 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
                   kernelSize={KernelSize.LARGE}
                   mipmapBlur
                 />
-                <ToneMapping mode={ToneMappingMode.AGX} middleGrey={0.5} />
-                <Vignette offset={0.25} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
-                <Noise premultiply opacity={0.06} blendFunction={BlendFunction.SOFT_LIGHT} />
-              </EffectComposer>
-            ) : (
-              <EffectComposer key="fx-base" multisampling={0} enableNormalPass={false}>
                 <ToneMapping mode={ToneMappingMode.AGX} middleGrey={0.5} />
                 <Vignette offset={0.25} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
                 <Noise premultiply opacity={0.06} blendFunction={BlendFunction.SOFT_LIGHT} />
