@@ -3,7 +3,6 @@ import ScrollWrapper from "./common/ScrollWrapper";
 import Experience from "./experience";
 import AuroraDebugPanel from "./experience/gallery/AuroraDebugPanel";
 import GalleryLightbox from "./experience/gallery/GalleryLightbox";
-import GalleryNavButtons from "./experience/gallery/GalleryNavButtons";
 import Footer from "./footer";
 import Hero from "./hero";
 import { usePortalStore } from "@/stores";
@@ -74,13 +73,6 @@ export default function PortfolioScene() {
       </CanvasLoader>
       <AuroraDebugPanel />
       <GalleryLightbox />
-      <GalleryNavButtonsGate />
     </>
   );
-}
-
-function GalleryNavButtonsGate() {
-  const isActive = usePortalStore((s) => s.activePortalId === "gallery");
-  if (!isActive) return null;
-  return <GalleryNavButtons />;
 }

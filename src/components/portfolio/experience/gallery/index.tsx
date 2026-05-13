@@ -6,7 +6,6 @@ import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Encounter } from "../../models/Encounter";
 import GalleryTile from "./GalleryTile";
-import { GalleryPanControls } from "./GalleryPanControls";
 
 const GalleryCarousel = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -19,9 +18,9 @@ const GalleryCarousel = () => {
   };
 
   const tiles = useMemo(() => {
-    const distance = 13;
+    const distance = 6;
     const count = GALLERY_ITEMS.length;
-    const fov = Math.PI;
+    const fov = Math.PI * 2;
     return GALLERY_ITEMS.map((item, i) => {
       const angle = (fov / count) * i;
       const z = -distance * Math.sin(angle);
@@ -51,19 +50,16 @@ const Gallery = () => {
 
   useEffect(() => {
     data.el.style.overflow = isActive ? "hidden" : "auto";
-    // Camera stays in its original scroll-driven position (first angle).
   }, [isActive]);
 
   return (
     <group>
-      {/* Encounter model — same slot/scale as Wanderer so it inherits all triggers */}
       <Encounter
         rotation={new THREE.Euler(0, Math.PI / 6, 0)}
         scale={new THREE.Vector3(1.5, 1.5, 1.5)}
         position={new THREE.Vector3(0, -1, -1)}
       />
       <GalleryCarousel />
-      {isActive && <GalleryPanControls stepAngle={Math.PI / GALLERY_ITEMS.length} />}
     </group>
   );
 };
