@@ -73,13 +73,6 @@ export default function PortfolioScene() {
       </CanvasLoader>
       <AuroraDebugPanel />
       <GalleryLightbox />
-      <GalleryNavButtonsGate />
     </>
   );
-}
-
-function GalleryNavButtonsGate() {
-  const isActive = usePortalStore((s) => s.activePortalId === "gallery");
-  if (!isActive) return null;
-  return <GalleryNavButtons />;
 }
