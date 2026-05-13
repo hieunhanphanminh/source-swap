@@ -240,6 +240,25 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
       </div>
       <ThemeSwitcher />
       <ScrollHint />
+      {import.meta.env.DEV && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 8,
+            left: 8,
+            zIndex: 9999,
+            padding: "4px 8px",
+            borderRadius: 6,
+            fontFamily: "monospace",
+            fontSize: 11,
+            color: "#fff",
+            background: isGalleryActive ? "rgba(34,197,94,0.85)" : "rgba(120,120,120,0.7)",
+            pointerEvents: "none",
+          }}
+        >
+          bloom: {isGalleryActive ? "ON (gallery)" : "OFF"}
+        </div>
+      )}
     </div>
   );
 };
