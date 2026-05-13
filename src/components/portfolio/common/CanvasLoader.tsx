@@ -2,6 +2,8 @@
 import { useGSAP } from "@gsap/react";
 import { AdaptiveDpr, Preload, ScrollControls, useProgress, useScroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Bloom, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { BlendFunction, ToneMappingMode } from "postprocessing";
 import gsap from "gsap";
 import { Suspense, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
