@@ -117,6 +117,7 @@ const ScrollInputBridge = () => {
 
 const CanvasLoader = (props: { children: React.ReactNode }) => {
   const ref= useRef<HTMLDivElement>(null);
+  const isGalleryActive = usePortalStore((state) => state.activePortalId === "gallery");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const backgroundColor = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();
