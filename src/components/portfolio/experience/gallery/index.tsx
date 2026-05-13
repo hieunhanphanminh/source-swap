@@ -63,7 +63,7 @@ const Gallery = () => {
         position={new THREE.Vector3(0, -1, -1)}
       />
       <GalleryCarousel />
-      {isActive && isMobile && <TouchPanControls />}
+      {isActive && <GalleryPanControls stepAngle={Math.PI / GALLERY_ITEMS.length} />}
     </group>
   );
 };
