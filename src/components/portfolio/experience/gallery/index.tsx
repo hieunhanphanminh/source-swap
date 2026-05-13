@@ -6,7 +6,7 @@ import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Encounter } from "../../models/Encounter";
 import GalleryTile from "./GalleryTile";
-import { TouchPanControls } from "../projects/TouchPanControls";
+import { GalleryPanControls } from "./GalleryPanControls";
 
 const GalleryCarousel = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -63,7 +63,7 @@ const Gallery = () => {
         position={new THREE.Vector3(0, -1, -1)}
       />
       <GalleryCarousel />
-      {isActive && isMobile && <TouchPanControls />}
+      {isActive && <GalleryPanControls stepAngle={Math.PI / GALLERY_ITEMS.length} />}
     </group>
   );
 };
