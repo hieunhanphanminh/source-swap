@@ -209,30 +209,28 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             </ScrollControls>
 
             {/* EffectComposer renders into the WebGL canvas only — DOM/UI overlays
-                (ThemeSwitcher, ScrollHint, lightbox, badges) are unaffected by bloom. */}
-            <EffectComposer multisampling={0} enableNormalPass={false}>
-              <Bloom
-                intensity={isGalleryActive ? 0.3 : 0}
-                luminanceThreshold={isGalleryActive ? 0.9 : 1.5}
-                luminanceSmoothing={0.15}
-                kernelSize={KernelSize.LARGE}
-                mipmapBlur
-              />
-              <ToneMapping
-                mode={ToneMappingMode.AGX}
-                middleGrey={0.5}
-              />
-              <Vignette
-                offset={0.25}
-                darkness={0.55}
-                blendFunction={BlendFunction.NORMAL}
-              />
-              <Noise
-                premultiply
-                opacity={0.06}
-                blendFunction={BlendFunction.SOFT_LIGHT}
-              />
-            </EffectComposer>
+                (ThemeSwitcher, ScrollHint, lightbox, badges) are unaffected by bloom.
+                Bloom pass is only mounted when the gallery portal is active. */}
+            {isGalleryActive ? (
+              <EffectComposer key="fx-gallery" multisampling={0} enableNormalPass={false}>
+                <Bloom
+                  intensity={0.3}
+                  luminanceThreshold={0.9}
+                  luminanceSmoothing={0.15}
+                  kernelSize={KernelSize.LARGE}
+                  mipmapBlur
+                />
+                <ToneMapping mode={ToneMappingMode.AGX} middleGrey={0.5} />
+                <Vignette offset={0.25} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
+                <Noise premultiply opacity={0.06} blendFunction={BlendFunction.SOFT_LIGHT} />
+              </EffectComposer>
+            ) : (
+              <EffectComposer key="fx-base" multisampling={0} enableNormalPass={false}>
+                <ToneMapping mode={ToneMappingMode.AGX} middleGrey={0.5} />
+                <Vignette offset={0.25} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
+                <Noise premultiply opacity={0.06} blendFunction={BlendFunction.SOFT_LIGHT} />
+              </EffectComposer>
+            )}
 
             <Preload all />
           </Suspense>
