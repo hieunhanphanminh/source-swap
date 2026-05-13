@@ -1,37 +1,30 @@
-## Romantic Gallery 3D Background
+## Goal
+Replace the Wanderer 3D model in the gallery scene with the uploaded `encounter.glb`, and tone down its colors so it blends into the romantic plum/pink atmosphere (lower contrast, softer palette).
 
-Make the gallery portal feel like a love-letter sky: pitch-black void, more aurora curtains in romantic pink/rose/magenta, and a constellation of floating hearts drifting around the carousel.
+## Steps
 
-### Changes
+1. **Add the asset**
+   - Copy `user-uploads://encounter.glb` → `public/models/encounter.glb` so `useGLTF('models/encounter.glb')` can load it (same convention as `wanderer_above_the_sea_of_fog.glb`).
 
-**1. Black background (already in place, reinforce)**
-`src/components/portfolio/experience/gallery/index.tsx` already swaps `scene.background` to `0x000000` while the gallery portal is active. Also set `scene.fog = null` during this window so curtains read crisply against the void.
+2. **Create `src/components/portfolio/models/Encounter.tsx`**
+   - Generic loader using `useGLTF` + `useMemo` to clone the scene (so recoloring doesn't mutate the cached GLTF).
+   - Traverse all meshes; for each material:
+     - Soften `color` by mixing with a warm pink mid-tone (`#f1c6d6`, mix factor ~0.45) — this compresses the dynamic range so highlights/shadows stop clashing with the deep plum sky.
+     - Clamp `emissive` and `emissiveIntensity` (mix toward `#3a1430` * 0.2) so any glowing parts don't blow out against the aurora.
+     - Set `roughness` ≈ 0.85, `metalness` ≈ 0.1 (if PBR), and `toneMapped = true`.
+     - Reduce overall brightness via `color.multiplyScalar(0.85)`.
+   - Accept the same props shape as `Wanderer` (`position`, `rotation`, `scale`) so the swap is one-line.
+   - Call `useGLTF.preload('models/encounter.glb')`.
 
-**2. Expand aurora ring (`src/stores/auroraStore.ts`)**
-Grow `DEFAULT_LAYERS` from 6 → 12 curtains arranged in a full ring overhead. Taller/wider scales (~`[11, 32, 1]`) and warmer romantic palette:` #ff5d8f`,` #ff9ec7`,` #ffb3d1`,` #c98bff`,` #ff79b0`,` #ffd1e6`. Bump default per-layer opacity to ~0.7 so they pop on black.
+3. **Swap in the gallery scene** (`src/components/portfolio/experience/gallery/index.tsx`)
+   - Remove the `Wanderer` import + JSX block.
+   - Render `<Encounter />` in the same position/rotation/scale slot. Other gallery pieces (Aurora, clouds, sakura, hearts, tiles, lights) stay untouched.
+   - Leave `Wanderer` available for the other scenes (Projects, Reasons) — only the gallery is changed.
 
-**3. Replace bokeh discs with floating hearts (`gallery/index.tsx`)**
-Remove the 14 `circleGeometry` bokeh discs. Add a new `FloatingHearts` component (~18 hearts) using a lightweight 2D heart shape — NOT the heavy `HeartMesh` (which uses MeshTransmissionMaterial; too expensive at 18×). Each heart:
+4. **Optional preloading**
+   - Add `Encounter` to `src/components/portfolio/common/Preloader.tsx` alongside the existing models so the gallery doesn't pop in.
 
-- `THREE.Shape` heart extruded with `depth: 0.15`, simple `MeshBasicMaterial` (transparent, additive blend) in rose/pink tones
-- Distributed in a wide ring (radius 14–22) at varied heights around the camera's gallery position (y ≈ -39)
-- Gentle bob/spin via `useFrame` (skip if `useReducedMotion`)
-- Sizes 0.4–1.1, opacities 0.35–0.7
-
-**4. Soft heart glow sprites**
-Add ~8 additive billboard sprites (radial-gradient CanvasTexture, pink) behind the hearts for bloom-like halos. Cheap — single shared texture.
-
-**5. Lighting tweak**
-Slightly dim ambient (`0.35` → `0.25`) and warm the rim point lights so the black sky reads darker and the aurora is the hero.
-
-### Out of scope
-
-Tile sizing, carousel layout, lightbox, hero/other portals, AuroraDebugPanel logic. No new textures downloaded — hearts are procedural geometry, halo is a generated CanvasTexture.
-
-### Technical notes
-
-- Reuse a single shared heart `ExtrudeGeometry` and a single shared halo `CanvasTexture` across all instances to keep draw cost low.
-- All new code is presentation-only inside `src/components/portfolio/experience/gallery/` plus the aurora layer constant.
-- Respects `useReducedMotion` for animation.
-
-Estimated cost: well under the 15-credit budget.
+## Notes
+- All edits stay frontend/presentation; no store, route, or data changes.
+- Recoloring is done at runtime via material mutation on a cloned scene — the original `.glb` is untouched, so we can tune the mix factor quickly if it still looks too punchy.
+- If the model turns out to use `MeshBasicMaterial` (unlit, like Wanderer), we'll fall back to just `color.lerp(pink, 0.45).multiplyScalar(0.85)` since basic materials ignore roughness/emissive.
