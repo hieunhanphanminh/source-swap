@@ -111,8 +111,8 @@ const Gallery = () => {
       {/* Same dreamy wanderer silhouette as Reasons, tinted by the rose lights */}
       <Encounter
         rotation={new THREE.Euler(0, Math.PI / 6, 0)}
-        scale={new THREE.Vector3(1.5, 1.5, 1.5)}
-        position={new THREE.Vector3(0, -1, -1)}
+        scale={new THREE.Vector3(0.12, 0.12, 0.12)}
+        position={new THREE.Vector3(0, -40, -4)}
       />
 
       {/* Aurora curtains overhead */}
