@@ -7,12 +7,6 @@ import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Encounter } from "../../models/Encounter";
-
-import CloudContainer from "../../models/Cloud";
-import SakuraPetals from "../../models/SakuraPetals";
-import FloatingHearts from "./FloatingHearts";
-
-const ROMANTIC_CLOUD_COLORS = ["#ffb3d1", "#ffcfa8", "#d9b8ff", "#ff9ec7", "#ffae7a", "#ffb3d1"];
 import GalleryTile from "./GalleryTile";
 import { TouchPanControls } from "../projects/TouchPanControls";
 
