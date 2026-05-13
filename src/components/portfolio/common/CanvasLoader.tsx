@@ -2,8 +2,8 @@
 import { useGSAP } from "@gsap/react";
 import { AdaptiveDpr, Preload, ScrollControls, useProgress, useScroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Bloom, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
-import { BlendFunction, ToneMappingMode } from "postprocessing";
+import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { BlendFunction, KernelSize, ToneMappingMode } from "postprocessing";
 import gsap from "gsap";
 import { Suspense, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
@@ -207,11 +207,14 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
               <Preloader />
             </ScrollControls>
 
+            {/* EffectComposer renders into the WebGL canvas only — DOM/UI overlays
+                (ThemeSwitcher, ScrollHint, lightbox, badges) are unaffected by bloom. */}
             <EffectComposer multisampling={0} enableNormalPass={false}>
               <Bloom
-                intensity={0.35}
-                luminanceThreshold={0.85}
-                luminanceSmoothing={0.2}
+                intensity={0.3}
+                luminanceThreshold={0.9}
+                luminanceSmoothing={0.15}
+                kernelSize={KernelSize.LARGE}
                 mipmapBlur
               />
               <ToneMapping
@@ -222,6 +225,11 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
                 offset={0.25}
                 darkness={0.55}
                 blendFunction={BlendFunction.NORMAL}
+              />
+              <Noise
+                premultiply
+                opacity={0.06}
+                blendFunction={BlendFunction.SOFT_LIGHT}
               />
             </EffectComposer>
 

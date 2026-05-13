@@ -56,11 +56,11 @@ const Gallery = () => {
     data.el.style.overflow = isActive ? "hidden" : "auto";
     if (isActive) {
       if (isMobile) {
-        gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
-        gsap.to(camera.rotation, { x: -0.18, y: 0, z: 0, duration: 1 });
+        gsap.to(camera.position, { z: 9.5, y: -38.5, x: 1, duration: 1 });
+        gsap.to(camera.rotation, { x: -0.06, y: 0, z: 0, duration: 1 });
       } else {
-        gsap.to(camera.position, { y: -39, x: 2, z: 11.5, duration: 1 });
-        gsap.to(camera.rotation, { x: -0.15, y: 0, z: 0, duration: 1 });
+        gsap.to(camera.position, { y: -38.5, x: 2, z: 9.8, duration: 1 });
+        gsap.to(camera.rotation, { x: -0.05, y: 0, z: 0, duration: 1 });
       }
     }
   }, [isActive]);
@@ -69,17 +69,17 @@ const Gallery = () => {
     if (isActive && !isMobile) {
       camera.rotation.y = THREE.MathUtils.lerp(
         camera.rotation.y,
-        -(state.pointer.x * Math.PI) / 8,
+        -(state.pointer.x * Math.PI) / 10,
         0.04,
       );
       camera.rotation.x = THREE.MathUtils.lerp(
         camera.rotation.x,
-        -0.15 - (state.pointer.y * Math.PI) / 40,
+        -0.05 - (state.pointer.y * Math.PI) / 60,
         0.04,
       );
       camera.position.z = THREE.MathUtils.damp(
         camera.position.z,
-        11.5 - state.pointer.y * 0.5,
+        9.8 - state.pointer.y * 0.4,
         5,
         delta,
       );
