@@ -211,13 +211,15 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             {/* EffectComposer renders into the WebGL canvas only — DOM/UI overlays
                 (ThemeSwitcher, ScrollHint, lightbox, badges) are unaffected by bloom. */}
             <EffectComposer multisampling={0} enableNormalPass={false}>
-              <Bloom
-                intensity={0.3}
-                luminanceThreshold={0.9}
-                luminanceSmoothing={0.15}
-                kernelSize={KernelSize.LARGE}
-                mipmapBlur
-              />
+              {isGalleryActive && (
+                <Bloom
+                  intensity={0.3}
+                  luminanceThreshold={0.9}
+                  luminanceSmoothing={0.15}
+                  kernelSize={KernelSize.LARGE}
+                  mipmapBlur
+                />
+              )}
               <ToneMapping
                 mode={ToneMappingMode.AGX}
                 middleGrey={0.5}
