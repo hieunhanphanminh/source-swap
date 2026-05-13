@@ -177,24 +177,13 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             toneMapping: THREE.NoToneMapping,
             toneMappingExposure: 1,
           }}
-          onCreated={({ gl, scene }) => {
-            // Tone mapping is handled by the postprocessing ToneMapping pass.
-            gl.toneMapping = THREE.NoToneMapping;
-            gl.toneMappingExposure = 1;
-            // Tinted, transparent fog — keeps distant silhouettes readable.
-            scene.fog = new THREE.Fog("#a89099", 28, 95);
+          onCreated={({ scene }) => {
+            scene.fog = new THREE.Fog("white", 30, 100);
           }}
           performance={{ min: 0.5 }}>
           {/* <Perf/> */}
           <Suspense fallback={null}>
-            <ambientLight intensity={0.25} color="#e8d8df" />
-            <hemisphereLight args={["#d8c4cf", "#4a3a45", 0.3]} />
-            <directionalLight
-              position={[6, 10, 4]}
-              intensity={0.6}
-              color="#f1dfe4"
-              castShadow={false}
-            />
+            <ambientLight intensity={0.5} />
 
             <ScrollControls
               pages={4}

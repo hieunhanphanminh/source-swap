@@ -21,9 +21,9 @@ const GalleryCarousel = () => {
   const tiles = useMemo(() => {
     const distance = 13;
     const count = GALLERY_ITEMS.length;
-    const fovFull = Math.PI * 2;
+    const fov = Math.PI;
     return GALLERY_ITEMS.map((item, i) => {
-      const angle = (fovFull / count) * i;
+      const angle = (fov / count) * i;
       const z = -distance * Math.sin(angle);
       const x = -distance * Math.cos(angle);
       const rotY = Math.PI / 2 - angle;
