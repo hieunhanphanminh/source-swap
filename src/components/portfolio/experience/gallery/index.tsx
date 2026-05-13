@@ -1,6 +1,4 @@
 import { useScroll } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import gsap from "gsap";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
@@ -48,43 +46,13 @@ const GalleryCarousel = () => {
 };
 
 const Gallery = () => {
-  const { camera } = useThree();
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
   const data = useScroll();
 
   useEffect(() => {
     data.el.style.overflow = isActive ? "hidden" : "auto";
-    if (isActive) {
-      if (isMobile) {
-        gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
-        gsap.to(camera.rotation, { x: 0, y: 0, z: 0, duration: 1 });
-      } else {
-        gsap.to(camera.position, { y: -39, x: 2, z: 11.5, duration: 1 });
-        gsap.to(camera.rotation, { x: 0, y: 0, z: 0, duration: 1 });
-      }
-    }
+    // Camera stays in its original scroll-driven position (first angle).
   }, [isActive]);
-
-  useFrame((state, delta) => {
-    if (isActive && !isMobile) {
-      camera.rotation.y = THREE.MathUtils.lerp(
-        camera.rotation.y,
-        -(state.pointer.x * Math.PI) / 10,
-        0.04,
-      );
-      camera.rotation.x = THREE.MathUtils.lerp(
-        camera.rotation.x,
-        -(state.pointer.y * Math.PI) / 60,
-        0.04,
-      );
-      camera.position.z = THREE.MathUtils.damp(
-        camera.position.z,
-        11.5 - state.pointer.y * 0.4,
-        5,
-        delta,
-      );
-    }
-  });
 
   return (
     <group>

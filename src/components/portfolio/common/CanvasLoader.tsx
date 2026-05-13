@@ -117,6 +117,7 @@ const ScrollInputBridge = () => {
 
 const CanvasLoader = (props: { children: React.ReactNode }) => {
   const ref= useRef<HTMLDivElement>(null);
+  const isGalleryActive = usePortalStore((state) => state.activePortalId === "gallery");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const backgroundColor = useThemeStore((state) => state.theme.color);
   const { progress } = useProgress();
@@ -211,8 +212,8 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
                 (ThemeSwitcher, ScrollHint, lightbox, badges) are unaffected by bloom. */}
             <EffectComposer multisampling={0} enableNormalPass={false}>
               <Bloom
-                intensity={0.3}
-                luminanceThreshold={0.9}
+                intensity={isGalleryActive ? 0.3 : 0}
+                luminanceThreshold={isGalleryActive ? 0.9 : 1.5}
                 luminanceSmoothing={0.15}
                 kernelSize={KernelSize.LARGE}
                 mipmapBlur
