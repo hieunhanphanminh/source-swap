@@ -6,7 +6,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
-import { Wanderer } from "../../models/Wanderer";
+import { Encounter } from "../../models/Encounter";
 import Aurora from "../../models/Aurora";
 import CloudContainer from "../../models/Cloud";
 import SakuraPetals from "../../models/SakuraPetals";
@@ -109,7 +109,7 @@ const Gallery = () => {
       <pointLight position={[0, 6, -8]} intensity={0.7} color="#ffb27a" distance={50} />
 
       {/* Same dreamy wanderer silhouette as Reasons, tinted by the rose lights */}
-      <Wanderer
+      <Encounter
         rotation={new THREE.Euler(0, Math.PI / 6, 0)}
         scale={new THREE.Vector3(1.5, 1.5, 1.5)}
         position={new THREE.Vector3(0, -1, -1)}
