@@ -173,22 +173,24 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             powerPreference: "high-performance",
             stencil: false,
             depth: true,
-            toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 0.85,
+            toneMapping: THREE.NoToneMapping,
+            toneMappingExposure: 1,
           }}
           onCreated={({ gl, scene }) => {
-            gl.toneMapping = THREE.ACESFilmicToneMapping;
-            gl.toneMappingExposure = 0.85;
-            scene.fog = new THREE.Fog("#cfb9c4", 18, 70);
+            // Tone mapping is handled by the postprocessing ToneMapping pass.
+            gl.toneMapping = THREE.NoToneMapping;
+            gl.toneMappingExposure = 1;
+            // Tinted, transparent fog — keeps distant silhouettes readable.
+            scene.fog = new THREE.Fog("#a89099", 28, 95);
           }}
           performance={{ min: 0.5 }}>
           {/* <Perf/> */}
           <Suspense fallback={null}>
-            <ambientLight intensity={0.28} color="#e8d8df" />
-            <hemisphereLight args={["#d8c4cf", "#5a4a55", 0.35]} />
+            <ambientLight intensity={0.25} color="#e8d8df" />
+            <hemisphereLight args={["#d8c4cf", "#4a3a45", 0.3]} />
             <directionalLight
               position={[6, 10, 4]}
-              intensity={0.7}
+              intensity={0.6}
               color="#f1dfe4"
               castShadow={false}
             />
@@ -204,6 +206,24 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
               {props.children}
               <Preloader />
             </ScrollControls>
+
+            <EffectComposer multisampling={0} enableNormalPass={false}>
+              <Bloom
+                intensity={0.35}
+                luminanceThreshold={0.85}
+                luminanceSmoothing={0.2}
+                mipmapBlur
+              />
+              <ToneMapping
+                mode={ToneMappingMode.AGX}
+                middleGrey={0.5}
+              />
+              <Vignette
+                offset={0.25}
+                darkness={0.55}
+                blendFunction={BlendFunction.NORMAL}
+              />
+            </EffectComposer>
 
             <Preload all />
           </Suspense>
