@@ -21,7 +21,7 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
 
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       mats.forEach((m) => {
-        const mat = m as THREE.Material & {
+        const mat = m as THREE.MeshStandardMaterial & {
           map?: THREE.Texture | null;
           emissiveMap?: THREE.Texture | null;
           normalMap?: THREE.Texture | null;
@@ -29,7 +29,6 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
           metalnessMap?: THREE.Texture | null;
           aoMap?: THREE.Texture | null;
         };
-        // Keep original colors — only tune textures + drop heavy maps for perf.
         const tuneTex = (t?: THREE.Texture | null) => {
           if (!t) return;
           t.anisotropy = Math.min(2, maxAniso);
@@ -43,6 +42,17 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
         mat.roughnessMap = null;
         mat.metalnessMap = null;
         mat.aoMap = null;
+
+        // Tame overexposed painterly look — restore contrast & detail.
+        mat.toneMapped = true;
+        if (mat.color) mat.color.multiplyScalar(0.78);
+        if (mat.emissive) {
+          mat.emissive.multiplyScalar(0.25);
+          if ("emissiveIntensity" in mat) mat.emissiveIntensity = 0.2;
+        }
+        if ("roughness" in mat) mat.roughness = Math.min(1, (mat.roughness ?? 0.5) + 0.25);
+        if ("metalness" in mat) mat.metalness = Math.max(0, (mat.metalness ?? 0) - 0.2);
+        if ("envMapIntensity" in mat) mat.envMapIntensity = 0.4;
         mat.needsUpdate = true;
       });
     });

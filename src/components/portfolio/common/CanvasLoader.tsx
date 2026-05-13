@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import gsap from "gsap";
 import { Suspense, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
+import * as THREE from "three";
 
 import { usePortalStore, useThemeStore } from "@/stores";
 
@@ -170,11 +171,25 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             powerPreference: "high-performance",
             stencil: false,
             depth: true,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 0.85,
+          }}
+          onCreated={({ gl, scene }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 0.85;
+            scene.fog = new THREE.Fog("#cfb9c4", 18, 70);
           }}
           performance={{ min: 0.5 }}>
           {/* <Perf/> */}
           <Suspense fallback={null}>
-            <ambientLight intensity={0.5} />
+            <ambientLight intensity={0.28} color="#e8d8df" />
+            <hemisphereLight args={["#d8c4cf", "#5a4a55", 0.35]} />
+            <directionalLight
+              position={[6, 10, 4]}
+              intensity={0.7}
+              color="#f1dfe4"
+              castShadow={false}
+            />
 
             <ScrollControls
               pages={4}
