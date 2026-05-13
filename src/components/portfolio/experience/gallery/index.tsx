@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { Encounter } from "../../models/Encounter";
-import Aurora from "../../models/Aurora";
+
 import CloudContainer from "../../models/Cloud";
 import SakuraPetals from "../../models/SakuraPetals";
 import FloatingHearts from "./FloatingHearts";
@@ -108,17 +108,12 @@ const Gallery = () => {
       <pointLight position={[0, -8, -10]} intensity={0.6} color="#ff5d8f" distance={55} />
       <pointLight position={[0, 6, -8]} intensity={0.7} color="#ffb27a" distance={50} />
 
-      {/* Same dreamy wanderer silhouette as Reasons, tinted by the rose lights */}
+      {/* Encounter model — local coords inside the rotated experience group, same slot Wanderer used */}
       <Encounter
         rotation={new THREE.Euler(0, Math.PI / 6, 0)}
-        scale={new THREE.Vector3(0.12, 0.12, 0.12)}
-        position={new THREE.Vector3(0, -40, -4)}
+        scale={new THREE.Vector3(0.1, 0.1, 0.1)}
+        position={new THREE.Vector3(0, -1, -1)}
       />
-
-      {/* Aurora curtains overhead */}
-      <Suspense fallback={null}>
-        <Aurora />
-      </Suspense>
 
       {/* Drifting hearts + glow halos around the gallery camera */}
       <FloatingHearts centerY={-39} />
