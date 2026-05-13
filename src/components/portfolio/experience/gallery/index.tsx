@@ -6,7 +6,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
-import { Wanderer } from "../../models/Wanderer";
+import { Encounter } from "../../models/Encounter";
 import Aurora from "../../models/Aurora";
 import CloudContainer from "../../models/Cloud";
 import SakuraPetals from "../../models/SakuraPetals";
