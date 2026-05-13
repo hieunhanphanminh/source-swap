@@ -48,7 +48,7 @@ const GalleryCarousel = () => {
 };
 
 const Gallery = () => {
-  const { camera, scene } = useThree();
+  const { camera } = useThree();
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
   const data = useScroll();
 
