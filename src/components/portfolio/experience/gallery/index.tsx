@@ -1,6 +1,4 @@
 import { useScroll } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import gsap from "gsap";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
