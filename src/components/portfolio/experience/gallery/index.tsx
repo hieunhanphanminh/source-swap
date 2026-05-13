@@ -109,7 +109,7 @@ const Gallery = () => {
       <pointLight position={[0, 6, -8]} intensity={0.7} color="#ffb27a" distance={50} />
 
       {/* Same dreamy wanderer silhouette as Reasons, tinted by the rose lights */}
-      <Wanderer
+      <Encounter
         rotation={new THREE.Euler(0, Math.PI / 6, 0)}
         scale={new THREE.Vector3(1.5, 1.5, 1.5)}
         position={new THREE.Vector3(0, -1, -1)}
