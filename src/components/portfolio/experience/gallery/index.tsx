@@ -18,7 +18,7 @@ const GalleryCarousel = () => {
   };
 
   const tiles = useMemo(() => {
-    const distance = 6;
+    const distance = 13;
     const count = GALLERY_ITEMS.length;
     const fov = Math.PI * 2;
     return GALLERY_ITEMS.map((item, i) => {
