@@ -1,53 +1,89 @@
 import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
+import { useGalleryLightboxStore } from "@/stores/galleryLightboxStore";
 import { Encounter } from "../../models/Encounter";
 import { TouchPanControls } from "../projects/TouchPanControls";
 import GalleryTile from "./GalleryTile";
 
-const GalleryCarousel = () => {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const isActive = usePortalStore((s) => s.activePortalId === "gallery");
-  const activeId = isActive ? selectedId : null;
+// Full 360° arc — equal angular spacing.
+const FOV = Math.PI * 2;
+const COUNT = GALLERY_ITEMS.length;
+const DISTANCE = Math.max(13, (6 * COUNT) / (2 * Math.PI));
+const STEP = FOV / COUNT;
+// Base group offset so tile #0 sits nicely framed at scene start.
+const BASE_GROUP_ROTATION = -Math.PI / 12;
 
-  const onClick = (id: number) => {
-    if (!isMobile) return;
-    setSelectedId(id === selectedId ? null : id);
+// Pre-compute tile transforms once.
+const TILE_TRANSFORMS = GALLERY_ITEMS.map((_, i) => {
+  const angle = STEP * i;
+  return {
+    position: [-DISTANCE * Math.cos(angle), 1, -DISTANCE * Math.sin(angle)] as [
+      number,
+      number,
+      number,
+    ],
+    rotation: [0, Math.PI / 2 - angle, 0] as [number, number, number],
+    angle,
   };
+});
 
-  const tiles = useMemo(() => {
-    // Full 360° arc — equal angular spacing.
-    const fov = Math.PI * 2;
-    const count = GALLERY_ITEMS.length;
-    // Distance scales with count so chord arc-length stays comfortable
-    // (target ~6 units between adjacent tile centers).
-    const distance = Math.max(13, (6 * count) / (2 * Math.PI));
-    return GALLERY_ITEMS.map((item, i) => {
-      const angle = (fov / count) * i;
-      const x = -distance * Math.cos(angle);
-      const z = -distance * Math.sin(angle);
-      const rotY = Math.PI / 2 - angle;
-      return (
-        <Suspense key={item.id} fallback={null}>
-          <GalleryTile
-            item={item}
-            index={i}
-            position={[x, 1, z]}
-            rotation={[0, rotY, 0]}
-            activeId={activeId}
-            onClick={() => onClick(i)}
-          />
-        </Suspense>
-      );
-    });
-  }, [activeId, isActive]);
+const GalleryCarousel = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const isActive = usePortalStore((s) => s.activePortalId === "gallery");
+  const openLightbox = useGalleryLightboxStore((s) => s.open);
+  const activeId = isActive ? selectedIndex : null;
 
-  return <group rotation={[0, -Math.PI / 12, 0]}>{tiles}</group>;
+  // Animate the carousel so the chosen tile sits at the front, then open lightbox.
+  const focusTile = useCallback(
+    (index: number) => {
+      setSelectedIndex(index);
+      const targetRot = BASE_GROUP_ROTATION + TILE_TRANSFORMS[index].angle;
+      if (groupRef.current) {
+        gsap.to(groupRef.current.rotation, {
+          y: targetRot,
+          duration: 0.9,
+          ease: "power3.out",
+          onComplete: () => openLightbox(GALLERY_ITEMS[index]),
+        });
+      } else {
+        openLightbox(GALLERY_ITEMS[index]);
+      }
+    },
+    [openLightbox],
+  );
+
+  const tiles = useMemo(
+    () =>
+      GALLERY_ITEMS.map((item, i) => {
+        const t = TILE_TRANSFORMS[i];
+        return (
+          <Suspense key={item.id} fallback={null}>
+            <GalleryTile
+              item={item}
+              index={i}
+              position={t.position}
+              rotation={t.rotation}
+              activeId={activeId}
+              onClick={() => focusTile(i)}
+            />
+          </Suspense>
+        );
+      }),
+    [activeId, focusTile],
+  );
+
+  return (
+    <group ref={groupRef} rotation={[0, BASE_GROUP_ROTATION, 0]}>
+      {tiles}
+    </group>
+  );
 };
 
 const Gallery = () => {
