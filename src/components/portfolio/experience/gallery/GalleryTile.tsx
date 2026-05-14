@@ -159,17 +159,17 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
       onPointerOver={() => !isMobile && isActive && setDesktopHovered(true)}
       onPointerOut={() => !isMobile && isActive && setDesktopHovered(false)}
     >
-      <group ref={groupRef}>
+      <group ref={groupRef} renderOrder={10}>
         {/* Soft pink glow halo behind the frame */}
-        <mesh position={[0, 0, -0.05]}>
+        <mesh position={[0, 0, -0.05]} renderOrder={9}>
           <planeGeometry args={[TILE_W * 1.35, TILE_H * 1.35, 1]} />
-          <meshBasicMaterial color="#ff9bbf" transparent opacity={0.18} depthWrite={false} />
+          <meshBasicMaterial color="#ff9bbf" transparent opacity={0.18} depthWrite={false} depthTest={false} />
         </mesh>
 
         {/* Media plane — the "photo/video frame". */}
-        <mesh onClick={handleClick}>
+        <mesh onClick={handleClick} position={[0, 0, 0.02]} renderOrder={11}>
           <planeGeometry args={[TILE_W, TILE_H, 1]} />
-          <meshBasicMaterial map={activeTex} transparent opacity={0.92} toneMapped={false} />
+          <meshBasicMaterial map={activeTex} transparent opacity={0.92} toneMapped={false} depthTest={false} depthWrite={false} />
           <Edges color="#ffe1e9" lineWidth={1.5} />
         </mesh>
 
