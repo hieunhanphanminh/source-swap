@@ -6,7 +6,17 @@ import { useEffect, useRef, useState } from "react";
  *
  * @returns
  */
-export const TouchPanControls = () => {
+interface TouchPanControlsProps {
+  /** Max rotation in radians from initial heading. Default Math.PI / 3 (~60°). */
+  maxRotation?: number;
+  /** Drag sensitivity in radians per pixel. Default 0.005. */
+  sensitivity?: number;
+}
+
+export const TouchPanControls = ({
+  maxRotation: maxRotationProp = Math.PI / 3,
+  sensitivity: sensitivityProp = 0.005,
+}: TouchPanControlsProps = {}) => {
   const { camera } = useThree()
   const touchStartRef = useRef({ x: 0, y: 0 })
   const cameraRotationRef = useRef({ x: 0, y: 0 })
@@ -64,11 +74,11 @@ export const TouchPanControls = () => {
       const deltaX = touchX - touchStartRef.current.x
 
       // Update target rotation with sensitivity adjustment
-      const sensitivity = 0.005
+      const sensitivity = sensitivityProp
       const newRotationY = cameraRotationRef.current.x + deltaX * sensitivity
 
       // Apply rotation limits to prevent over-rotation
-      const maxRotation = Math.PI / 3
+      const maxRotation = maxRotationProp
       targetRotationRef.current.x = Math.max(Math.min(newRotationY, maxRotation), -maxRotation)
     }
 
