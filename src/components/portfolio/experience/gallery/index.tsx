@@ -118,12 +118,28 @@ const Gallery = () => {
     );
   });
 
+  const encounterRef = useRef<THREE.Group>(null);
+  const baseY = -1;
+
+  useFrame((state) => {
+    if (!encounterRef.current) return;
+    const t = state.clock.elapsedTime;
+    encounterRef.current.position.y = baseY + Math.sin(t * 0.6) * 0.15;
+    encounterRef.current.rotation.y += 0.0008;
+  });
+
   return (
     <group>
-      <Encounter
-        rotation={new THREE.Euler(0, Math.PI / 6, 0)}
-        scale={new THREE.Vector3(1.5, 1.5, 1.5)}
-        position={new THREE.Vector3(0, -1, -1)}
+      <group ref={encounterRef} position={[0, baseY, -1]} rotation={[0, Math.PI / 6, 0]}>
+        <Encounter scale={new THREE.Vector3(1.5, 1.5, 1.5)} />
+      </group>
+      <ContactShadows
+        position={[0, -1.65, -1]}
+        opacity={0.45}
+        scale={6}
+        blur={2.4}
+        far={3}
+        color="#1a0a14"
       />
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls maxRotation={Math.PI} />}
