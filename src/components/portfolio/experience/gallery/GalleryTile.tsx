@@ -6,7 +6,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 
 import { usePortalStore } from "@/stores";
-import { useGalleryLightboxStore } from "@/stores/galleryLightboxStore";
+
 import { GalleryItem } from "@/constants/gallery";
 
 interface GalleryTileProps {
