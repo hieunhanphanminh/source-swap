@@ -53,14 +53,18 @@ const patchSurfaceShader = (material: THREE.MeshBasicMaterial) => {
 
 // ---------------------------------------------------------------
 // Caches keyed by source URL so we can fully dispose on cleanup.
+// Source-material → cloned-material lookup lives INSIDE each entry so
+// disposing the entry releases all references and lets a remount rebuild
+// fresh materials (a module-level WeakMap would hand back disposed clones).
 // ---------------------------------------------------------------
 type CacheEntry = {
   scene: THREE.Object3D;
   materials: Set<THREE.Material>;
   textures: Set<THREE.Texture>;
+  geometries: Set<THREE.BufferGeometry>;
+  bySource: Map<THREE.Material, THREE.Material>;
 };
 const urlCache = new Map<string, CacheEntry>();
-const materialBySource = new WeakMap<THREE.Material, THREE.Material>();
 const textureConfigured = new WeakSet<THREE.Texture>();
 
 const buildMaterial = (
@@ -68,11 +72,8 @@ const buildMaterial = (
   maxAniso: number,
   entry: CacheEntry,
 ): THREE.Material => {
-  const cached = materialBySource.get(src);
-  if (cached) {
-    entry.materials.add(cached);
-    return cached;
-  }
+  const cached = entry.bySource.get(src);
+  if (cached) return cached;
 
   const map = src.map ?? (src as any).baseColorTexture ?? null;
   if (map && !textureConfigured.has(map)) {
@@ -113,7 +114,7 @@ const buildMaterial = (
   next.name = src.name;
   if (!isAdditive) patchSurfaceShader(next);
 
-  materialBySource.set(src, next);
+  entry.bySource.set(src, next);
   entry.materials.add(next);
   return next;
 };
@@ -131,6 +132,9 @@ const remapMaterials = (
   return buildMaterial(mat as THREE.MeshStandardMaterial, maxAniso, entry);
 };
 
+const isMeshLike = (obj: THREE.Object3D): obj is THREE.Mesh =>
+  (obj as any).isMesh === true || (obj as any).isSkinnedMesh === true;
+
 const buildScene = (
   url: string,
   scene: THREE.Object3D,
@@ -139,22 +143,23 @@ const buildScene = (
   const cached = urlCache.get(url);
   if (cached) return cached.scene;
 
-  // SkeletonUtils.clone preserves skinning bindings; falls back fine for
-  // non-skinned meshes too.
+  // SkeletonUtils.clone preserves skinning bindings and works for plain
+  // meshes too — covers mixed Mesh / SkinnedMesh hierarchies in one pass.
   const root = cloneSkeleton(scene);
   const entry: CacheEntry = {
     scene: root,
     materials: new Set(),
     textures: new Set(),
+    geometries: new Set(),
+    bySource: new Map(),
   };
 
   root.traverse((obj) => {
-    const mesh = obj as THREE.Mesh | THREE.SkinnedMesh;
-    if (!(mesh as any).isMesh && !(mesh as any).isSkinnedMesh) return;
+    if (!isMeshLike(obj)) return;
+    const mesh = obj as THREE.Mesh;
+    if (mesh.geometry) entry.geometries.add(mesh.geometry);
     if (!mesh.material) return;
-    mesh.material = remapMaterials(mesh.material, maxAniso, entry) as
-      | THREE.Material
-      | THREE.Material[];
+    mesh.material = remapMaterials(mesh.material, maxAniso, entry);
   });
 
   urlCache.set(url, entry);
@@ -168,10 +173,11 @@ export const disposeEncounterCache = (url?: string) => {
     if (!entry) continue;
     entry.materials.forEach((m) => m.dispose());
     entry.textures.forEach((t) => t.dispose());
-    entry.scene.traverse((obj) => {
-      const mesh = obj as THREE.Mesh;
-      if ((mesh as any).isMesh && mesh.geometry) mesh.geometry.dispose?.();
-    });
+    entry.geometries.forEach((g) => g.dispose());
+    entry.bySource.clear();
+    entry.materials.clear();
+    entry.textures.clear();
+    entry.geometries.clear();
     urlCache.delete(k);
   }
 };
