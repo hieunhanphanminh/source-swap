@@ -86,10 +86,47 @@ const GalleryCarousel = () => {
   );
 };
 
+const LIGHT_BLUE = new THREE.Color("#dbeeff");
+
 const Gallery = () => {
-  const { camera } = useThree();
+  const { camera, scene, gl } = useThree();
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
   const data = useScroll();
+
+  // Apply dreamy snowy atmosphere only while the gallery portal is active.
+  useEffect(() => {
+    if (!isActive) return;
+
+    const prevFog = scene.fog;
+    const prevBg = scene.background;
+    const prevTone = gl.toneMapping;
+    const prevExp = gl.toneMappingExposure;
+    const persp = camera as THREE.PerspectiveCamera;
+    const prevFov = persp.isPerspectiveCamera ? persp.fov : null;
+    const prevPitch = camera.rotation.x;
+
+    scene.background = LIGHT_BLUE;
+    scene.fog = new THREE.FogExp2("#ffffff", 0.055);
+    gl.toneMapping = THREE.ACESFilmicToneMapping;
+    gl.toneMappingExposure = 1.25;
+
+    if (persp.isPerspectiveCamera) {
+      persp.fov = 58;
+      persp.updateProjectionMatrix();
+    }
+
+    return () => {
+      scene.fog = prevFog;
+      scene.background = prevBg;
+      gl.toneMapping = prevTone;
+      gl.toneMappingExposure = prevExp;
+      if (persp.isPerspectiveCamera && prevFov !== null) {
+        persp.fov = prevFov;
+        persp.updateProjectionMatrix();
+      }
+      camera.rotation.x = prevPitch;
+    };
+  }, [isActive, scene, gl, camera]);
 
   useEffect(() => {
     data.el.style.overflow = isActive ? "hidden" : "auto";
@@ -102,7 +139,7 @@ const Gallery = () => {
     }
   }, [isActive]);
 
-  // Desktop: follow-the-cursor pan (matches Projects/Reasons scene).
+  // Desktop: follow-the-cursor pan with subtle downward pitch (~-4°).
   useFrame((state, delta) => {
     if (!isActive || isMobile) return;
     camera.rotation.y = THREE.MathUtils.lerp(
@@ -110,6 +147,7 @@ const Gallery = () => {
       -(state.pointer.x * Math.PI) / 4,
       0.03,
     );
+    camera.rotation.x = THREE.MathUtils.lerp(camera.rotation.x, -0.07, 0.05);
     camera.position.z = THREE.MathUtils.damp(
       camera.position.z,
       11.5 - state.pointer.y,
@@ -130,16 +168,21 @@ const Gallery = () => {
 
   return (
     <group>
+      {/* Soft overexposed lighting: mostly ambient, faint directional fill. */}
+      <ambientLight intensity={1.4} color="#ffffff" />
+      <hemisphereLight args={["#ffffff", "#cfe3ff", 0.6]} />
+      <directionalLight position={[4, 8, 6]} intensity={0.35} color="#ffffff" />
+
       <group ref={encounterRef} position={[0, baseY, -1]} rotation={[0, Math.PI / 6, 0]}>
         <Encounter scale={new THREE.Vector3(1.5, 1.5, 1.5)} />
       </group>
       <ContactShadows
         position={[0, -1.65, -1]}
-        opacity={0.45}
+        opacity={0.18}
         scale={6}
-        blur={2.4}
+        blur={3.2}
         far={3}
-        color="#1a0a14"
+        color="#a8b8c8"
       />
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls maxRotation={Math.PI} />}
