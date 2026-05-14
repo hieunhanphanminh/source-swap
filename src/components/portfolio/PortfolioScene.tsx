@@ -1,7 +1,6 @@
 import CanvasLoader from "./common/CanvasLoader";
 import ScrollWrapper from "./common/ScrollWrapper";
 import Experience from "./experience";
-import AuroraDebugPanel from "./experience/gallery/AuroraDebugPanel";
 import GalleryLightbox from "./experience/gallery/GalleryLightbox";
 import Footer from "./footer";
 import Hero from "./hero";
