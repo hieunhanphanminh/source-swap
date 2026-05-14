@@ -16,7 +16,7 @@ import FloatingNav from "@/components/FloatingNav";
 import SplashScreen from "@/components/SplashScreen";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import SceneBackdrop from "@/components/SceneBackdrop";
-import AuroraMesh from "@/components/AuroraMesh";
+
 import MouseSpotlight from "@/components/MouseSpotlight";
 import RouteProgress from "@/components/RouteProgress";
 import NotFound from "@/pages/NotFound";
@@ -175,7 +175,6 @@ function RootComponent() {
         ) : (
           <>
             <SceneBackdrop />
-            <AuroraMesh />
             <MouseSpotlight />
             <RouteProgress />
             <FloatingNav />

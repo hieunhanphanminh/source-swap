@@ -2,8 +2,8 @@
 import { useGSAP } from "@gsap/react";
 import { AdaptiveDpr, Preload, ScrollControls, useProgress, useScroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Bloom, DepthOfField, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
-import { BlendFunction, KernelSize, ToneMappingMode } from "postprocessing";
+import { DepthOfField, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { BlendFunction, ToneMappingMode } from "postprocessing";
 import gsap from "gsap";
 import { Suspense, useEffect, useRef } from "react";
 import { isMobile } from "react-device-detect";
@@ -198,18 +198,9 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             </ScrollControls>
 
             {/* Postprocessing only runs in the gallery portal. Hero and other
-                sections render with the renderer's native output — no bloom,
-                no AGX tone mapping, no vignette, no grain — restoring the
-                original color/lighting look. */}
+                sections render with the renderer's native output. */}
             {isGalleryActive && (
               <EffectComposer key="fx-gallery" multisampling={0} enableNormalPass={false}>
-                <Bloom
-                  intensity={1.8}
-                  luminanceThreshold={0.35}
-                  luminanceSmoothing={0.45}
-                  kernelSize={KernelSize.HUGE}
-                  mipmapBlur
-                />
                 <DepthOfField
                   focusDistance={0.012}
                   focalLength={0.04}
@@ -228,25 +219,6 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
       </div>
       <ThemeSwitcher />
       <ScrollHint />
-      {import.meta.env.DEV && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 8,
-            left: 8,
-            zIndex: 9999,
-            padding: "4px 8px",
-            borderRadius: 6,
-            fontFamily: "monospace",
-            fontSize: 11,
-            color: "#fff",
-            background: isGalleryActive ? "rgba(34,197,94,0.85)" : "rgba(120,120,120,0.7)",
-            pointerEvents: "none",
-          }}
-        >
-          bloom: {isGalleryActive ? "ON (gallery)" : "OFF"}
-        </div>
-      )}
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import HeroScene from "./scenes/HeroScene";
 import AmbientScene from "./scenes/AmbientScene";
 import { useReducedMotion, useIsMobile } from "./useReducedMotion";
@@ -34,11 +33,6 @@ export default function SceneCanvas({ pathname }: Props) {
           <HeroScene reduced={reduced} mobile={mobile} />
         ) : (
           <AmbientScene variant={variant} reduced={reduced} mobile={mobile} />
-        )}
-        {!mobile && !reduced && (
-          <EffectComposer>
-            <Bloom intensity={0.7} luminanceThreshold={0.25} luminanceSmoothing={0.6} mipmapBlur />
-          </EffectComposer>
         )}
       </Suspense>
     </Canvas>
