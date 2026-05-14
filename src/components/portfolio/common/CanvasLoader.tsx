@@ -204,9 +204,9 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             {isGalleryActive && (
               <EffectComposer key="fx-gallery" multisampling={0} enableNormalPass={false}>
                 <Bloom
-                  intensity={0.3}
-                  luminanceThreshold={0.9}
-                  luminanceSmoothing={0.15}
+                  intensity={1.1}
+                  luminanceThreshold={0.55}
+                  luminanceSmoothing={0.25}
                   kernelSize={KernelSize.LARGE}
                   mipmapBlur
                 />
