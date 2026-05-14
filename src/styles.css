@@ -600,20 +600,6 @@
   from { opacity: 0; transform: perspective(1600px) translateZ(-80px) translateY(30px); filter: blur(8px); }
   to   { opacity: 1; transform: perspective(1600px) translateZ(0) translateY(0); filter: blur(0); }
 }
-
-@keyframes auroraDrift1 {
-  0% { transform: translate3d(0,0,0) scale(1); }
-  100% { transform: translate3d(8%, 6%, 0) scale(1.15); }
-}
-@keyframes auroraDrift2 {
-  0% { transform: translate3d(0,0,0) scale(1); }
-  100% { transform: translate3d(-6%, -4%, 0) scale(1.18); }
-}
-@keyframes auroraDrift3 {
-  0% { transform: translate3d(0,0,0) scale(1); }
-  100% { transform: translate3d(4%, -8%, 0) scale(1.12); }
-}
-
 @keyframes floatBlockA {
   0%   { transform: translate3d(0, 0, 0) rotate(-0.4deg); }
   100% { transform: translate3d(-8px, -14px, 0) rotate(0.4deg); }
