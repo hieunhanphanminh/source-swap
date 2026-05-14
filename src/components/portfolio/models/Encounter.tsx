@@ -1,9 +1,9 @@
-import { JSX, useMemo } from "react";
+import { JSX, useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
+import { clone as cloneSkeleton } from "three/examples/jsm/utils/SkeletonUtils.js";
 import * as THREE from "three";
 
-// Tilt Brush brushes that should render additively (light-emitting).
 const ADDITIVE_BRUSHES = new Set([
   "Light",
   "LightWire",
@@ -11,9 +11,6 @@ const ADDITIVE_BRUSHES = new Set([
   "SoftHighlighter",
   "Splatter",
 ]);
-
-// Brushes that should pop (saturated marker strokes). Reduced for the
-// dreamy washed-out gallery look — light desaturation only.
 const POP_BRUSHES = new Set(["Marker", "TaperedMarker", "TaperedFlat"]);
 const RECEDE_BRUSHES = new Set(["DuctTape", "Paper"]);
 
@@ -44,7 +41,6 @@ const patchSurfaceShader = (material: THREE.MeshBasicMaterial) => {
         "#include <color_fragment>",
         `#include <color_fragment>
          #ifdef USE_COLOR
-           // Heavy desaturation toward monochrome haze.
            float lum = dot(vColor.rgb, vec3(0.3, 0.59, 0.11));
            diffuseColor.rgb = mix(vec3(lum), diffuseColor.rgb, 0.45);
          #endif
@@ -56,19 +52,27 @@ const patchSurfaceShader = (material: THREE.MeshBasicMaterial) => {
 };
 
 // ---------------------------------------------------------------
-// Module-level caches: persist across mounts so navigating between
-// gallery items does not re-clone the scene or rebuild materials.
+// Caches keyed by source URL so we can fully dispose on cleanup.
 // ---------------------------------------------------------------
-const sceneCache = new WeakMap<THREE.Object3D, THREE.Object3D>();
-const materialCache = new WeakMap<THREE.Material, THREE.Material>();
+type CacheEntry = {
+  scene: THREE.Object3D;
+  materials: Set<THREE.Material>;
+  textures: Set<THREE.Texture>;
+};
+const urlCache = new Map<string, CacheEntry>();
+const materialBySource = new WeakMap<THREE.Material, THREE.Material>();
 const textureConfigured = new WeakSet<THREE.Texture>();
 
 const buildMaterial = (
   src: THREE.MeshStandardMaterial,
   maxAniso: number,
+  entry: CacheEntry,
 ): THREE.Material => {
-  const cached = materialCache.get(src);
-  if (cached) return cached;
+  const cached = materialBySource.get(src);
+  if (cached) {
+    entry.materials.add(cached);
+    return cached;
+  }
 
   const map = src.map ?? (src as any).baseColorTexture ?? null;
   if (map && !textureConfigured.has(map)) {
@@ -80,6 +84,7 @@ const buildMaterial = (
     map.needsUpdate = true;
     textureConfigured.add(map);
   }
+  if (map) entry.textures.add(map);
 
   const isAdditive = ADDITIVE_BRUSHES.has(src.name);
   const baseColor = new THREE.Color(
@@ -108,37 +113,85 @@ const buildMaterial = (
   next.name = src.name;
   if (!isAdditive) patchSurfaceShader(next);
 
-  materialCache.set(src, next);
+  materialBySource.set(src, next);
+  entry.materials.add(next);
   return next;
 };
 
-const buildScene = (scene: THREE.Object3D, maxAniso: number): THREE.Object3D => {
-  const cached = sceneCache.get(scene);
-  if (cached) return cached;
+const remapMaterials = (
+  mat: THREE.Material | THREE.Material[],
+  maxAniso: number,
+  entry: CacheEntry,
+): THREE.Material | THREE.Material[] => {
+  if (Array.isArray(mat)) {
+    return mat.map((m) =>
+      buildMaterial(m as THREE.MeshStandardMaterial, maxAniso, entry),
+    );
+  }
+  return buildMaterial(mat as THREE.MeshStandardMaterial, maxAniso, entry);
+};
 
-  const root = scene.clone(true);
+const buildScene = (
+  url: string,
+  scene: THREE.Object3D,
+  maxAniso: number,
+): THREE.Object3D => {
+  const cached = urlCache.get(url);
+  if (cached) return cached.scene;
+
+  // SkeletonUtils.clone preserves skinning bindings; falls back fine for
+  // non-skinned meshes too.
+  const root = cloneSkeleton(scene);
+  const entry: CacheEntry = {
+    scene: root,
+    materials: new Set(),
+    textures: new Set(),
+  };
+
   root.traverse((obj) => {
-    const mesh = obj as THREE.Mesh;
-    if (!(mesh as any).isMesh) return;
-    const src = mesh.material as
-      | THREE.MeshStandardMaterial
-      | THREE.MeshStandardMaterial[];
-    if (Array.isArray(src)) {
-      mesh.material = src.map((m) => buildMaterial(m, maxAniso));
-    } else if (src) {
-      mesh.material = buildMaterial(src, maxAniso);
-    }
+    const mesh = obj as THREE.Mesh | THREE.SkinnedMesh;
+    if (!(mesh as any).isMesh && !(mesh as any).isSkinnedMesh) return;
+    if (!mesh.material) return;
+    mesh.material = remapMaterials(mesh.material, maxAniso, entry) as
+      | THREE.Material
+      | THREE.Material[];
   });
 
-  sceneCache.set(scene, root);
+  urlCache.set(url, entry);
   return root;
 };
 
+export const disposeEncounterCache = (url?: string) => {
+  const keys = url ? [url] : Array.from(urlCache.keys());
+  for (const k of keys) {
+    const entry = urlCache.get(k);
+    if (!entry) continue;
+    entry.materials.forEach((m) => m.dispose());
+    entry.textures.forEach((t) => t.dispose());
+    entry.scene.traverse((obj) => {
+      const mesh = obj as THREE.Mesh;
+      if ((mesh as any).isMesh && mesh.geometry) mesh.geometry.dispose?.();
+    });
+    urlCache.delete(k);
+  }
+};
+
+const MODEL_URL = "models/encounter.glb";
+
 export function Encounter(props: JSX.IntrinsicElements["group"]) {
-  const { scene } = useGLTF("models/encounter.glb");
+  const { scene } = useGLTF(MODEL_URL);
   const gl = useThree((s) => s.gl);
   const maxAniso = useMemo(() => gl.capabilities.getMaxAnisotropy(), [gl]);
-  const cloned = useMemo(() => buildScene(scene, maxAniso), [scene, maxAniso]);
+  const cloned = useMemo(
+    () => buildScene(MODEL_URL, scene, maxAniso),
+    [scene, maxAniso],
+  );
+
+  // Release this URL's cache when the model URL changes or the component
+  // unmounts (e.g. user leaves the gallery).
+  useEffect(() => {
+    return () => disposeEncounterCache(MODEL_URL);
+  }, []);
 
   return (
     <group {...props} dispose={null}>
@@ -147,4 +200,4 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
   );
 }
 
-useGLTF.preload("models/encounter.glb");
+useGLTF.preload(MODEL_URL);
