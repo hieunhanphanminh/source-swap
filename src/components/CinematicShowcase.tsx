@@ -142,47 +142,6 @@ export default function CinematicShowcase({ items }: Props) {
           willChange: reduced ? undefined : "transform",
         }}
       >
-        {/* Ambient aurora */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-          style={{ opacity: reduced ? 0.6 : "calc(0.55 + var(--cam, 0) * 0.45)" }}
-        >
-          <div
-            className="absolute -top-40 -left-32 w-[60vw] h-[60vw] rounded-full"
-            style={{
-              background:
-                "radial-gradient(closest-side, hsl(var(--love-rose) / 0.32), transparent 70%)",
-              filter: "blur(70px)",
-              animation: reduced ? undefined : "auroraDrift1 22s ease-in-out infinite alternate",
-            }}
-          />
-          <div
-            className="absolute top-1/3 -right-40 w-[55vw] h-[55vw] rounded-full"
-            style={{
-              background:
-                "radial-gradient(closest-side, hsl(var(--love-gold) / 0.22), transparent 70%)",
-              filter: "blur(80px)",
-              animation: reduced ? undefined : "auroraDrift2 28s ease-in-out infinite alternate",
-            }}
-          />
-          <div
-            className="absolute bottom-0 left-1/4 w-[50vw] h-[50vw] rounded-full"
-            style={{
-              background:
-                "radial-gradient(closest-side, hsl(var(--primary) / 0.20), transparent 70%)",
-              filter: "blur(90px)",
-              animation: reduced ? undefined : "auroraDrift3 32s ease-in-out infinite alternate",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(120% 80% at 50% 50%, transparent 50%, hsl(var(--background) / 0.55) 100%)",
-            }}
-          />
-        </div>
 
         <div className="flex flex-col gap-y-32 sm:gap-y-44 md:gap-y-56 px-4 sm:px-6 md:px-8">
           {items.map((item, i) => (
