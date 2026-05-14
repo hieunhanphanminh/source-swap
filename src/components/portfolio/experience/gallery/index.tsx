@@ -86,28 +86,62 @@ const GalleryCarousel = () => {
   );
 };
 
+const GALLERY_BG = new THREE.Color("#cfe6f5");
+const GALLERY_FOG = new THREE.FogExp2("#f4faff", 0.07);
+const GALLERY_PITCH = THREE.MathUtils.degToRad(-4);
+const GALLERY_FOV = 58;
+
 const Gallery = () => {
-  const { camera } = useThree();
+  const { camera, scene, gl } = useThree();
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
   const data = useScroll();
 
   useEffect(() => {
     data.el.style.overflow = isActive ? "hidden" : "auto";
-    if (isActive) {
-      if (isMobile) {
-        gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
-      } else {
-        gsap.to(camera.position, { y: -39, x: 2, duration: 1 });
-      }
-    }
-  }, [isActive]);
+    if (!isActive) return;
 
-  // Desktop: follow-the-cursor pan (matches Projects/Reasons scene).
+    // Snapshot prior scene state so we restore on exit.
+    const prevBg = scene.background;
+    const prevFog = scene.fog;
+    const prevExposure = gl.toneMappingExposure;
+    const prevFov = (camera as THREE.PerspectiveCamera).fov;
+
+    scene.background = GALLERY_BG;
+    scene.fog = GALLERY_FOG;
+    gl.toneMappingExposure = 1.18;
+    if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
+      (camera as THREE.PerspectiveCamera).fov = GALLERY_FOV;
+      (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
+    }
+
+    if (isMobile) {
+      gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
+    } else {
+      gsap.to(camera.position, { y: -39, x: 2, duration: 1 });
+    }
+
+    return () => {
+      scene.background = prevBg;
+      scene.fog = prevFog;
+      gl.toneMappingExposure = prevExposure;
+      if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
+        (camera as THREE.PerspectiveCamera).fov = prevFov;
+        (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
+      }
+    };
+  }, [isActive, camera, scene, gl, data.el]);
+
+  // Desktop: follow-the-cursor pan with a soft cinematic downward pitch.
   useFrame((state, delta) => {
     if (!isActive || isMobile) return;
     camera.rotation.y = THREE.MathUtils.lerp(
       camera.rotation.y,
       -(state.pointer.x * Math.PI) / 4,
+      0.03,
+    );
+    camera.rotation.x = THREE.MathUtils.lerp(
+      camera.rotation.x,
+      GALLERY_PITCH + state.pointer.y * 0.04,
       0.03,
     );
     camera.position.z = THREE.MathUtils.damp(
