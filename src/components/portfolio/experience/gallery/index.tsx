@@ -134,25 +134,28 @@ const Gallery = () => {
     };
   }, [isActive, camera, scene, gl, data.el]);
 
-  // Desktop: follow-the-cursor pan with a soft cinematic downward pitch.
+  // Desktop: follow-the-cursor pan, looking at a point slightly below the
+  // camera height so the horizon settles near screen middle.
+  const lookTarget = useRef(new THREE.Vector3());
+  const currentLook = useRef(new THREE.Vector3());
   useFrame((state, delta) => {
     if (!isActive || isMobile) return;
-    camera.rotation.y = THREE.MathUtils.lerp(
-      camera.rotation.y,
-      -(state.pointer.x * Math.PI) / 4,
-      0.03,
-    );
-    camera.rotation.x = THREE.MathUtils.lerp(
-      camera.rotation.x,
-      GALLERY_PITCH + state.pointer.y * 0.04,
-      0.03,
-    );
     camera.position.z = THREE.MathUtils.damp(
       camera.position.z,
       11.5 - state.pointer.y,
       7,
       delta,
     );
+    // LookAt anchor: ~0.15u below cam height + soft pointer-driven sway.
+    const yawOffset = -(state.pointer.x * Math.PI) / 4;
+    const dropBelow = 0.15 - state.pointer.y * 0.04;
+    lookTarget.current.set(
+      camera.position.x + Math.sin(yawOffset) * 4,
+      camera.position.y - dropBelow,
+      camera.position.z - Math.cos(yawOffset) * 4,
+    );
+    currentLook.current.lerp(lookTarget.current, 0.05);
+    camera.lookAt(currentLook.current);
   });
 
   const encounterRef = useRef<THREE.Group>(null);
