@@ -3,7 +3,6 @@ import ScrollWrapper from "./common/ScrollWrapper";
 import Experience from "./experience";
 import AuroraDebugPanel from "./experience/gallery/AuroraDebugPanel";
 import GalleryLightbox from "./experience/gallery/GalleryLightbox";
-import GalleryScrollRow from "./experience/gallery/GalleryScrollRow";
 import Footer from "./footer";
 import Hero from "./hero";
 import { usePortalStore } from "@/stores";
@@ -73,7 +72,6 @@ export default function PortfolioScene() {
         </ScrollWrapper>
       </CanvasLoader>
       <AuroraDebugPanel />
-      <GalleryScrollRow />
       <GalleryLightbox />
     </>
   );
