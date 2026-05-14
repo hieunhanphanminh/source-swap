@@ -118,9 +118,9 @@ const Gallery = () => {
     }
 
     if (isMobile) {
-      gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
+      gsap.to(camera.position, { z: 11.5, y: GALLERY_CAM_Y, x: 1, duration: 1 });
     } else {
-      gsap.to(camera.position, { y: -39, x: 2, duration: 1 });
+      gsap.to(camera.position, { y: GALLERY_CAM_Y, x: 2, duration: 1 });
     }
 
     return () => {
