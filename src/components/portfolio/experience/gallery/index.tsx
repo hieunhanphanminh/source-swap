@@ -169,11 +169,11 @@ const Gallery = () => {
       </group>
       <ContactShadows
         position={[0, -1.65, -1]}
-        opacity={0.45}
+        opacity={0.12}
         scale={6}
-        blur={2.4}
+        blur={3.2}
         far={3}
-        color="#1a0a14"
+        color="#9ec4dd"
       />
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls maxRotation={Math.PI} />}
