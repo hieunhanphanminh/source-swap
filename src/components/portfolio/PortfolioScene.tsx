@@ -70,7 +70,6 @@ export default function PortfolioScene() {
           <Footer />
         </ScrollWrapper>
       </CanvasLoader>
-      <AuroraDebugPanel />
       <GalleryLightbox />
     </>
   );
