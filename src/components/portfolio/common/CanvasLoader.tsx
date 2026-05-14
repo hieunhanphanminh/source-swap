@@ -2,7 +2,7 @@
 import { useGSAP } from "@gsap/react";
 import { AdaptiveDpr, Preload, ScrollControls, useProgress, useScroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Bloom, EffectComposer, Noise, ToneMapping, Vignette } from "@react-three/postprocessing";
+import { Bloom, DepthOfField, EffectComposer, ToneMapping, Vignette } from "@react-three/postprocessing";
 import { BlendFunction, KernelSize, ToneMappingMode } from "postprocessing";
 import gsap from "gsap";
 import { Suspense, useEffect, useRef } from "react";
@@ -204,15 +204,19 @@ const CanvasLoader = (props: { children: React.ReactNode }) => {
             {isGalleryActive && (
               <EffectComposer key="fx-gallery" multisampling={0} enableNormalPass={false}>
                 <Bloom
-                  intensity={1.1}
-                  luminanceThreshold={0.55}
-                  luminanceSmoothing={0.25}
-                  kernelSize={KernelSize.LARGE}
+                  intensity={1.8}
+                  luminanceThreshold={0.35}
+                  luminanceSmoothing={0.45}
+                  kernelSize={KernelSize.HUGE}
                   mipmapBlur
                 />
-                <ToneMapping mode={ToneMappingMode.AGX} middleGrey={0.5} />
-                <Vignette offset={0.25} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
-                <Noise premultiply opacity={0.06} blendFunction={BlendFunction.SOFT_LIGHT} />
+                <DepthOfField
+                  focusDistance={0.012}
+                  focalLength={0.04}
+                  bokehScale={3.5}
+                />
+                <ToneMapping mode={ToneMappingMode.ACES_FILMIC} middleGrey={0.62} />
+                <Vignette offset={0.4} darkness={0.25} blendFunction={BlendFunction.NORMAL} />
               </EffectComposer>
             )}
 
