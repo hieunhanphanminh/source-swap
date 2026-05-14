@@ -24,15 +24,21 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
       if (!(mesh as any).isMesh) return;
 
       const src = mesh.material as THREE.MeshStandardMaterial | THREE.MeshStandardMaterial[];
+      const cache = new Map<THREE.Material, THREE.Material>();
       const apply = (m: THREE.MeshStandardMaterial): THREE.Material => {
+        const cached = cache.get(m);
+        if (cached) return cached;
         const map = m.map ?? (m as any).baseColorTexture ?? null;
         if (map) {
           map.colorSpace = THREE.SRGBColorSpace;
+          map.anisotropy = 4;
           map.needsUpdate = true;
         }
         const isAdditive = ADDITIVE_BRUSHES.has(m.name);
         // Unlit material so the model is visible without scene lighting,
         // matching how Tilt Brush brushes are normally previewed.
+        // Tilt Brush bakes stroke color into vertex colors — enable them
+        // so painted strokes show their authored hues, not pure-white textures.
         const next = new THREE.MeshBasicMaterial({
           map,
           color: new THREE.Color(
@@ -40,6 +46,7 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
             m.color?.g ?? 1,
             m.color?.b ?? 1,
           ),
+          vertexColors: true,
           transparent: true,
           opacity: m.opacity ?? 1,
           alphaTest: isAdditive ? 0 : 0.05,
@@ -49,6 +56,7 @@ export function Encounter(props: JSX.IntrinsicElements["group"]) {
           toneMapped: false,
         });
         next.name = m.name;
+        cache.set(m, next);
         return next;
       };
 
