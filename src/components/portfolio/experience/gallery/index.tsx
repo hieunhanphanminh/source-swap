@@ -90,6 +90,9 @@ const GALLERY_BG = new THREE.Color("#cfe6f5");
 const GALLERY_FOG = new THREE.FogExp2("#f4faff", 0.07);
 const GALLERY_PITCH = THREE.MathUtils.degToRad(-4);
 const GALLERY_FOV = 58;
+// Head-height third-person framing — roughly at the character's eyeline so
+// the horizon sits near screen middle instead of pointing at the sky.
+const GALLERY_CAM_Y = 0.6;
 
 const Gallery = () => {
   const { camera, scene, gl } = useThree();
@@ -115,9 +118,9 @@ const Gallery = () => {
     }
 
     if (isMobile) {
-      gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
+      gsap.to(camera.position, { z: 11.5, y: GALLERY_CAM_Y, x: 1, duration: 1 });
     } else {
-      gsap.to(camera.position, { y: -39, x: 2, duration: 1 });
+      gsap.to(camera.position, { y: GALLERY_CAM_Y, x: 2, duration: 1 });
     }
 
     return () => {
