@@ -7,7 +7,7 @@ import { useScrollProgressRef } from "../useScrollProgress";
 type Variant = "gallery" | "timeline" | "dreams" | "reasons" | "letter";
 
 const PALETTE: Record<Variant, { a: string; b: string; orbs: number; sparkleColor: string }> = {
-  gallery:  { a: "#ff5f9e", b: "#a78bfa", orbs: 14, sparkleColor: "#ffd6e8" },
+  gallery:  { a: "#cbd5e1", b: "#94a3b8", orbs: 14, sparkleColor: "#e2e8f0" },
   timeline: { a: "#ffd166", b: "#ff5f9e", orbs: 10, sparkleColor: "#ffe9b8" },
   dreams:   { a: "#7dd3fc", b: "#a78bfa", orbs: 18, sparkleColor: "#cfe7ff" },
   reasons:  { a: "#ff5f9e", b: "#ffd166", orbs: 12, sparkleColor: "#ffd6e8" },
