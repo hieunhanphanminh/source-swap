@@ -1,39 +1,51 @@
-## Goal
-Make the Encounter Tilt Brush model in the gallery scene the visual centerpiece — keep its painterly character but add depth, glow, sharper textures, gentle motion, and grounding, with a saturated palette that pops against the plum/pink atmosphere.
+# Make Gallery match the Reasons section
 
-## Changes
+The "reasons" 3D portal you're comparing against is the `projects` portal (the in-scene one rendered with the Wanderer painting and the curved row of cards in image-17). The gallery currently differs from it in three ways. This plan brings them into alignment.
 
-### 1. `src/components/portfolio/models/Encounter.tsx` — material + texture upgrades
+## 1. Same opening camera framing as reasons
 
-- **Pop tint (B2)**: per-brush color treatment in the material cache:
-  - `Marker`, `TaperedMarker`, `TaperedFlat`: `color.offsetHSL(0, +0.15, +0.05)` (more saturated, slight lift).
-  - `DuctTape`, `Paper`: `color.offsetHSL(0, -0.2, 0)` (desaturate so they recede).
-  - `Light`, `LightWire`, `Highlighter`, `SoftHighlighter`, `Splatter`: leave as-is — bloom will handle pop.
-- **Fake AO depth (A1)** on non-additive materials via `material.onBeforeCompile`: inject a cheap NdotV rim-darken into the fragment so silhouettes get edge falloff without real lights. Keep additive brushes flat.
-- **Crisp textures (D1+D2)**: replace the hard-coded `anisotropy = 4` with `gl.capabilities.getMaxAnisotropy()` (read via `useThree`), set `minFilter = LinearMipmapLinearFilter`, `generateMipmaps = true`.
-- **Saturation lift on vertex colors**: in the same `onBeforeCompile`, add `vColor.rgb = mix(vec3(dot(vColor.rgb, vec3(0.3,0.59,0.11))), vColor.rgb, 1.25);` to push saturation ~25%.
+`Gallery` and `Projects` already animate the camera to the same position (`y: -39`, `x: 2`, `z: 11.5`). The reason image-18 looks tilted-up while image-17 looks level is the **carousel layout**, not the camera:
 
-### 2. `src/components/portfolio/experience/gallery/index.tsx` — motion + grounding
+- Reasons (`ProjectsCarousel`): `fov = Math.PI` (180°), fixed `distance = 13`, tiles placed at `y: 1` in a half-arc in front of the camera.
+- Gallery (`GalleryCarousel`): `FOV = Math.PI * 2` (full 360°) and a distance derived from tile count, which pushes tiles out and wraps them behind the camera.
 
-- **Idle float (E1)**: wrap `<Encounter />` in a ref'd `<group>`; in `useFrame`, animate `position.y = baseY + Math.sin(t * 0.6) * 0.15` and `rotation.y += delta * 0.05`.
-- **Contact shadow (F2)**: add `<ContactShadows position={[0, -1.6, -1]} opacity={0.45} scale={6} blur={2.4} far={3} color="#1a0a14" />` from `@react-three/drei` directly under the model.
-- Keep cursor-follow camera behavior untouched.
+Fix: change `GalleryCarousel` in `src/components/portfolio/experience/gallery/index.tsx` to use the same layout math as `ProjectsCarousel`:
 
-### 3. `src/components/portfolio/PortfolioScene.tsx` — postprocessing bloom (C1)
+- `FOV = Math.PI`, `DISTANCE = 13`, tiles at `y: 1`.
+- Keep the existing `BASE_GROUP_ROTATION`, `focusTile` GSAP rotation, and lightbox open behavior — the `angle` math stays the same, only the arc width changes.
 
-- Install `@react-three/postprocessing` if not already present (check first).
-- Inside the `<Canvas>` tree, mount `<EffectComposer disableNormalPass>` with a `<Bloom>` pass tuned for additive brushes:
-  - `intensity={1.1}`, `luminanceThreshold={0.55}`, `luminanceSmoothing={0.25}`, `mipmapBlur`.
-- Gate the composer on `activePortalId === "gallery"` so other scenes aren't affected and we don't pay the postprocess cost when not needed.
-- Verify `gl` tone mapping stays compatible (already `toneMapped: false` on Encounter materials, so bloom won't double-boost them).
+No change to the `useEffect` camera tween or `useFrame` pointer lerp — those already mirror the reasons section.
 
-## Technical notes
+## 2. Remove residual pink/purple from the 3D background
 
-- Bloom only "sees" pixels above the luminance threshold; since Light/Highlighter/Splatter use `AdditiveBlending` and `toneMapped: false`, they'll naturally clear the threshold and glow, while painted strokes stay grounded.
-- `onBeforeCompile` is applied once per cached material — no per-frame cost.
-- Contact shadow uses an off-screen render; cheap at this scale (one model, blur 2.4).
-- All edits are presentation-only. No store, route, data, or model-source changes. The `.glb` and texture files stay untouched.
+Two sources contribute to the pink/rose haze:
 
-## Out of scope (offered earlier, deferred)
-- Cel/toon shading (A3), real PBR lighting (A2), fog/vignette/CA (C2/C3), KTX2 compression (D3), parallax tilt + entrance anim (E2/E3), rim-light backdrop (F1).
-- Easy to add in a follow-up if the recommended pack still feels short.
+1. `AmbientScene` (`src/three/scenes/AmbientScene.tsx`) is not actually rendered behind the in-scene portals (`PortfolioScene` uses its own canvas), so it does not affect the gallery view — no change needed here.
+2. The Wanderer GLB itself has warm pink/rose strokes in the sky (visible in both image-17 and image-18). It is baked into the painting's materials and cannot be "deleted" without editing the model.
+
+Fix: add a subtle scene tint in the gallery group only — a large desaturating fog (`<fog attach="fog" args={["#e6ecf2", 18, 60]} />`) plus a soft cool ambient light. This shifts the warm pinks toward neutral grey-blue without touching the model file. Scoped to the gallery group so the reasons section is unchanged.
+
+If you instead want the pinks fully gone (not just muted), the alternative is to swap the Wanderer model for a different backdrop — say so and I'll propose options.
+
+## 3. Gallery tile styling to match the reason textbox
+
+The reason cards (`ProjectTile`) use: white translucent plane (`color="#FFF"`, `opacity 0.3`), **black** title/subtitle text, and **black** edges. Image-17 shows that look — light glass with dark serif text.
+
+Your message says "text into white *like* the reason textbox." Those two things conflict (the reason textbox uses dark text on a white panel). I'll take the most consistent reading: **mirror the reason tile exactly** — white translucent panel, black text, black edges — so the gallery reads the same way image-17 does. If you actually want white text on a dark panel instead, tell me and I'll flip it.
+
+Changes in `src/components/portfolio/experience/gallery/GalleryTile.tsx`:
+
+- Backdrop plane: `color="#ffffff"`, `opacity 0.3` (was `#0b1220` / 0.55).
+- Edges on media plane and badges: `color="black"` (was `#ffffff`).
+- Caption text color: `"black"` (was `#f8fafc`).
+- Meta/label text color: `"black"` (was `#e2e8f0`).
+- Subtitle (hover whisper): `"black"`.
+- Date badge plane: `color="#ffffff"`, `opacity 0.3`, black edges.
+- PLAY badge: keep dark fill + white text (it's a CTA button, matches the reason "VIEW ↗" button).
+
+## Files touched
+
+- `src/components/portfolio/experience/gallery/index.tsx` — carousel layout constants.
+- `src/components/portfolio/experience/gallery/GalleryTile.tsx` — tile colors / edges.
+
+No changes to `AmbientScene`, `ProjectsCarousel`, or the Wanderer model.

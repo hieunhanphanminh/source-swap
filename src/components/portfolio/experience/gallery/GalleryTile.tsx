@@ -93,15 +93,16 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
 
   const captionProps: Partial<TextProps> = useMemo(() => ({
     font: "./soria-font.ttf",
-    color: "#f8fafc",
+    color: "black",
   }), []);
 
   const metaProps: Partial<TextProps> = useMemo(() => ({
     font: "./Vercetti-Regular.woff",
-    color: "#e2e8f0",
+    color: "black",
     anchorX: "left",
     anchorY: "top",
   }), []);
+
 
   useEffect(() => {
     if (!groupRef.current) return;
@@ -154,17 +155,18 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
       onPointerOut={() => !isMobile && isActive && setDesktopHovered(false)}
     >
       <group ref={groupRef} renderOrder={10}>
-        {/* Dark translucent backdrop — glass-card style for readability */}
+        {/* White translucent backdrop — matches reason textbox style */}
         <mesh position={[0, 0, -0.05]} renderOrder={9}>
           <planeGeometry args={[TILE_W * 1.35, TILE_H * 1.35, 1]} />
-          <meshBasicMaterial color="#0b1220" transparent opacity={0.55} depthWrite={false} depthTest={false} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.3} depthWrite={false} depthTest={false} />
+          <Edges color="black" lineWidth={1} />
         </mesh>
 
         {/* Media plane — the "photo/video frame". */}
         <mesh onClick={handleClick} position={[0, 0, 0.02]} renderOrder={11}>
           <planeGeometry args={[TILE_W, TILE_H, 1]} />
           <meshBasicMaterial map={activeTex} transparent opacity={0.98} toneMapped={false} depthTest={false} depthWrite={false} />
-          <Edges color="#ffffff" lineWidth={1.5} />
+          <Edges color="black" lineWidth={1.5} />
         </mesh>
 
         {/* Caption (title under the frame) */}
@@ -183,8 +185,8 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         <group position={[-TILE_W / 2 + 0.55, TILE_H / 2 + 0.2, 0.01]}>
           <mesh>
             <planeGeometry args={[1.7, 0.4, 1]} />
-            <meshBasicMaterial color="#0b1220" transparent opacity={0.6} />
-            <Edges color="#ffffff" lineWidth={1} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.3} />
+            <Edges color="black" lineWidth={1} />
           </mesh>
           <Text {...metaProps} position={[-0.7, 0.18, 0]} fontSize={0.22}>
             {item.label}
@@ -194,7 +196,7 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         {/* Subtitle (whisper line) — fades in on hover */}
         <Text
           {...metaProps}
-          color="#f8fafc"
+          color="black"
           fillOpacity={0}
           maxWidth={TILE_W - 0.2}
           position={[-TILE_W / 2 + 0.1, -TILE_H / 2 - 0.35, 0.05]}
@@ -207,8 +209,8 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
         <group position={[TILE_W / 2 - 0.55, TILE_H / 2 + 0.2, 0.05]} scale={[0, 0, 1]}>
           <mesh>
             <planeGeometry args={[1, 0.4, 1]} />
-            <meshBasicMaterial color="#0b1220" transparent opacity={0.85} />
-            <Edges color="#ffffff" lineWidth={1} />
+            <meshBasicMaterial color="#222" transparent opacity={0.9} />
+            <Edges color="white" lineWidth={1} />
           </mesh>
           <Text
             font="./Vercetti-Regular.woff"
@@ -222,6 +224,7 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
           </Text>
         </group>
       </group>
+
     </group>
   );
 };

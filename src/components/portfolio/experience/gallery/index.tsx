@@ -11,10 +11,10 @@ import { Wanderer } from "../../models/Wanderer";
 import { TouchPanControls } from "../projects/TouchPanControls";
 import GalleryTile from "./GalleryTile";
 
-// Full 360° arc — equal angular spacing.
-const FOV = Math.PI * 2;
+// Half-arc layout (matches reasons/projects section).
+const FOV = Math.PI;
 const COUNT = GALLERY_ITEMS.length;
-const DISTANCE = Math.max(13, (6 * COUNT) / (2 * Math.PI));
+const DISTANCE = 13;
 const STEP = FOV / COUNT;
 const BASE_GROUP_ROTATION = -Math.PI / 12;
 
@@ -30,6 +30,7 @@ const TILE_TRANSFORMS = GALLERY_ITEMS.map((_, i) => {
     angle,
   };
 });
+
 
 const GalleryCarousel = () => {
   const groupRef = useRef<THREE.Group>(null);
@@ -119,6 +120,8 @@ const Gallery = () => {
 
   return (
     <group>
+      <fog attach="fog" args={["#e6ecf2", 18, 60]} />
+      <ambientLight intensity={0.4} color="#dbe6f2" />
       <Wanderer
         rotation={new THREE.Euler(0, Math.PI / 6, 0)}
         scale={new THREE.Vector3(1.5, 1.5, 1.5)}
@@ -128,6 +131,7 @@ const Gallery = () => {
       {isActive && isMobile && <TouchPanControls maxRotation={Math.PI} />}
     </group>
   );
+
 };
 
 export default Gallery;
