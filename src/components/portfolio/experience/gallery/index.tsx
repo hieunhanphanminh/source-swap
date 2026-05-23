@@ -1,4 +1,4 @@
-import { ContactShadows, useScroll } from "@react-three/drei";
+import { useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -7,7 +7,7 @@ import * as THREE from "three";
 import { usePortalStore } from "@/stores";
 import { GALLERY_ITEMS } from "@/constants/gallery";
 import { useGalleryLightboxStore } from "@/stores/galleryLightboxStore";
-import { Encounter } from "../../models/Encounter";
+import { Wanderer } from "../../models/Wanderer";
 import { TouchPanControls } from "../projects/TouchPanControls";
 import GalleryTile from "./GalleryTile";
 
@@ -16,10 +16,8 @@ const FOV = Math.PI * 2;
 const COUNT = GALLERY_ITEMS.length;
 const DISTANCE = Math.max(13, (6 * COUNT) / (2 * Math.PI));
 const STEP = FOV / COUNT;
-// Base group offset so tile #0 sits nicely framed at scene start.
 const BASE_GROUP_ROTATION = -Math.PI / 12;
 
-// Pre-compute tile transforms once.
 const TILE_TRANSFORMS = GALLERY_ITEMS.map((_, i) => {
   const angle = STEP * i;
   return {
@@ -40,7 +38,6 @@ const GalleryCarousel = () => {
   const openLightbox = useGalleryLightboxStore((s) => s.open);
   const activeId = isActive ? selectedIndex : null;
 
-  // Animate the carousel so the chosen tile sits at the front, then open lightbox.
   const focusTile = useCallback(
     (index: number) => {
       setSelectedIndex(index);
@@ -86,100 +83,46 @@ const GalleryCarousel = () => {
   );
 };
 
-const GALLERY_BG = new THREE.Color("#cfe6f5");
-const GALLERY_FOG = new THREE.FogExp2("#f4faff", 0.07);
-const GALLERY_PITCH = THREE.MathUtils.degToRad(-4);
-const GALLERY_FOV = 58;
-// Head-height third-person framing — roughly at the character's eyeline so
-// the horizon sits near screen middle instead of pointing at the sky.
-const GALLERY_CAM_Y = 0.6;
-
 const Gallery = () => {
-  const { camera, scene, gl } = useThree();
+  const { camera } = useThree();
   const isActive = usePortalStore((s) => s.activePortalId === "gallery");
   const data = useScroll();
 
   useEffect(() => {
     data.el.style.overflow = isActive ? "hidden" : "auto";
-    if (!isActive) return;
-
-    // Snapshot prior scene state so we restore on exit.
-    const prevBg = scene.background;
-    const prevFog = scene.fog;
-    const prevExposure = gl.toneMappingExposure;
-    const prevFov = (camera as THREE.PerspectiveCamera).fov;
-
-    scene.background = GALLERY_BG;
-    scene.fog = GALLERY_FOG;
-    gl.toneMappingExposure = 1.18;
-    if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
-      (camera as THREE.PerspectiveCamera).fov = GALLERY_FOV;
-      (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
-    }
-
-    if (isMobile) {
-      gsap.to(camera.position, { z: 11.5, y: GALLERY_CAM_Y, x: 1, duration: 1 });
-    } else {
-      gsap.to(camera.position, { y: GALLERY_CAM_Y, x: 2, duration: 1 });
-    }
-
-    return () => {
-      scene.background = prevBg;
-      scene.fog = prevFog;
-      gl.toneMappingExposure = prevExposure;
-      if ((camera as THREE.PerspectiveCamera).isPerspectiveCamera) {
-        (camera as THREE.PerspectiveCamera).fov = prevFov;
-        (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
+    if (isActive) {
+      if (isMobile) {
+        gsap.to(camera.position, { z: 11.5, y: -39, x: 1, duration: 1 });
+      } else {
+        gsap.to(camera.position, { y: -39, x: 2, duration: 1 });
       }
-    };
-  }, [isActive, camera, scene, gl, data.el]);
+    }
+  }, [isActive, camera, data.el]);
 
-  // Desktop: follow-the-cursor pan, looking at a point slightly below the
-  // camera height so the horizon settles near screen middle.
-  const lookTarget = useRef(new THREE.Vector3());
-  const currentLook = useRef(new THREE.Vector3());
   useFrame((state, delta) => {
-    if (!isActive || isMobile) return;
-    camera.position.z = THREE.MathUtils.damp(
-      camera.position.z,
-      11.5 - state.pointer.y,
-      7,
-      delta,
-    );
-    // LookAt anchor: ~0.15u below cam height + soft pointer-driven sway.
-    const yawOffset = -(state.pointer.x * Math.PI) / 4;
-    const dropBelow = 0.15 - state.pointer.y * 0.04;
-    lookTarget.current.set(
-      camera.position.x + Math.sin(yawOffset) * 4,
-      camera.position.y - dropBelow,
-      camera.position.z - Math.cos(yawOffset) * 4,
-    );
-    currentLook.current.lerp(lookTarget.current, 0.05);
-    camera.lookAt(currentLook.current);
-  });
-
-  const encounterRef = useRef<THREE.Group>(null);
-  const baseY = -1;
-
-  useFrame((state) => {
-    if (!encounterRef.current) return;
-    const t = state.clock.elapsedTime;
-    encounterRef.current.position.y = baseY + Math.sin(t * 0.6) * 0.15;
-    encounterRef.current.rotation.y += 0.0008;
+    if (isActive) {
+      if (!isMobile) {
+        camera.rotation.y = THREE.MathUtils.lerp(
+          camera.rotation.y,
+          -(state.pointer.x * Math.PI) / 4,
+          0.03,
+        );
+        camera.position.z = THREE.MathUtils.damp(
+          camera.position.z,
+          11.5 - state.pointer.y,
+          7,
+          delta,
+        );
+      }
+    }
   });
 
   return (
     <group>
-      <group ref={encounterRef} position={[0, baseY, -1]} rotation={[0, Math.PI / 6, 0]}>
-        <Encounter scale={new THREE.Vector3(1.5, 1.5, 1.5)} />
-      </group>
-      <ContactShadows
-        position={[0, -1.65, -1]}
-        opacity={0.12}
-        scale={6}
-        blur={3.2}
-        far={3}
-        color="#9ec4dd"
+      <Wanderer
+        rotation={new THREE.Euler(0, Math.PI / 6, 0)}
+        scale={new THREE.Vector3(1.5, 1.5, 1.5)}
+        position={new THREE.Vector3(0, -1, -1)}
       />
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls maxRotation={Math.PI} />}
