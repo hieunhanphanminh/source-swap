@@ -93,12 +93,12 @@ const GalleryTile = ({ item, index, position, rotation, activeId, onClick }: Gal
 
   const captionProps: Partial<TextProps> = useMemo(() => ({
     font: "./soria-font.ttf",
-    color: "#fff5f5",
+    color: "#f8fafc",
   }), []);
 
   const metaProps: Partial<TextProps> = useMemo(() => ({
     font: "./Vercetti-Regular.woff",
-    color: "#ffd1dc",
+    color: "#e2e8f0",
     anchorX: "left",
     anchorY: "top",
   }), []);
