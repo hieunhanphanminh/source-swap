@@ -39,14 +39,14 @@ export default function HeroScene({ reduced = false, mobile = false }: { reduced
   return (
     <group ref={group}>
       <ambientLight intensity={0.4} />
-      <pointLight position={[3, 2, 4]} intensity={3} color="#ff5f9e" />
-      <pointLight position={[-4, -1, 2]} intensity={2} color="#ffd166" />
-      <pointLight position={[0, 4, -3]} intensity={1.5} color="#a78bfa" />
+      <pointLight position={[3, 2, 4]} intensity={2.4} color="#e5e7eb" />
+      <pointLight position={[-4, -1, 2]} intensity={1.6} color="#cbd5e1" />
+      <pointLight position={[0, 4, -3]} intensity={1.2} color="#94a3b8" />
       <Environment preset="night" />
       <group ref={heartGroup} position={[0, 0, -1.5]}>
         <HeartMesh reduced={reduced} />
       </group>
-      <Sparkles count={mobile ? 60 : 140} scale={[8, 6, 6]} size={3} speed={0.3} color="#ffb3d1" />
+      <Sparkles count={mobile ? 60 : 140} scale={[8, 6, 6]} size={3} speed={0.3} color="#e5e7eb" />
       <Stars radius={40} depth={30} count={mobile ? 800 : 2500} factor={3} fade speed={0.5} />
     </group>
   );

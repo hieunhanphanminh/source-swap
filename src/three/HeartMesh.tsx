@@ -45,7 +45,7 @@ export default function HeartMesh({ reduced = false }: { reduced?: boolean }) {
     <Float speed={1.4} rotationIntensity={0.3} floatIntensity={0.8}>
       <mesh ref={ref} geometry={geometry} castShadow receiveShadow>
         <MeshTransmissionMaterial
-          color="#ff5f9e"
+          color="#cbd5e1"
           thickness={0.8}
           roughness={0.08}
           transmission={1}
@@ -55,7 +55,7 @@ export default function HeartMesh({ reduced = false }: { reduced?: boolean }) {
           distortion={0.2}
           distortionScale={0.4}
           temporalDistortion={0.1}
-          attenuationColor="#ff80b5"
+          attenuationColor="#e5e7eb"
           attenuationDistance={1.5}
         />
       </mesh>
