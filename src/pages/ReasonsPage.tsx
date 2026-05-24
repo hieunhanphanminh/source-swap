@@ -1,24 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import ParticleCanvas, { useParticles } from "@/components/ParticleCanvas";
 import TiltCard from "@/components/TiltCard";
+import GalleryLightbox from "@/components/portfolio/experience/gallery/GalleryLightbox";
+import { GALLERY_ITEMS, type GalleryItem } from "@/constants/gallery";
+import { useGalleryLightboxStore } from "@/stores/galleryLightboxStore";
 
-const REASONS = [
-  { front: "01", emoji: "🎮", back: "The way we met — you on Sage, dropping smokes and dropping me into a crush in the same round. Pearl will always be our map." },
-  { front: "02", emoji: "😂", back: "Your laugh. Specifically the dumb wheezy one you do when you weren't trying to laugh — that one literally rewires my brain chemistry." },
-  { front: "03", emoji: "🥺", back: "How soft your voice gets late at night. It's the only sound that turns my whole nervous system into airplane mode." },
-  { front: "04", emoji: "🔥", back: "Your stubborn, competitive, absolutely-locked-in mode in ranked. Watching you tilt and then clutch is genuinely my favorite show." },
-  { front: "05", emoji: "🧠", back: "The way you remember tiny things I said weeks ago — and bring them back at the perfect moment, like you've been quietly building a Rhia-shaped folder of me." },
-  { front: "06", emoji: "🌏", back: "Your two halves — Turkish and Vietnamese — and how proud and unapologetically you you are about both. It makes me want to learn every story." },
-  { front: "07", emoji: "💌", back: "The texts you send out of nowhere. Not the 'goodnight' ones — the random 'thinking of you' ones that hit at 2:47pm on a Tuesday. Those rebuild me." },
-  { front: "08", emoji: "🫶", back: "How safe you make me feel saying things I don't say to anyone else. With you, my walls don't even bother showing up to work." },
-  { front: "09", emoji: "✨", back: "The future version of you that I get little glimpses of — and the fact that I get to be standing right next to her when she gets there." },
-  { front: "10", emoji: "💍", back: "Because out of everyone in every lobby, every server, every city — it's you. It was always going to be you. That's not a reason, it's a fact." },
-];
-
-function FlipCard({ reason, index }: { reason: (typeof REASONS)[0]; index: number }) {
+function FlipCard({ item, index }: { item: GalleryItem; index: number }) {
   const [flipped, setFlipped] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const open = useGalleryLightboxStore((s) => s.open);
 
   useEffect(() => {
     const el = ref.current;
@@ -33,6 +24,10 @@ function FlipCard({ reason, index }: { reason: (typeof REASONS)[0]; index: numbe
     return () => obs.disconnect();
   }, []);
 
+  const numeral = String(index + 1).padStart(2, "0");
+  const isVideo = item.type === "video";
+  const poster = isVideo ? (item.thumb || item.src) : item.src;
+
   return (
     <div
       ref={ref}
@@ -45,51 +40,88 @@ function FlipCard({ reason, index }: { reason: (typeof REASONS)[0]; index: numbe
     >
       <TiltCard intensity={0.8} className="rounded-2xl cursor-pointer" onClick={() => setFlipped(!flipped)}>
       <div
-        className="relative w-full h-[200px] sm:h-[220px] transition-transform duration-700"
+        className="relative w-full h-[260px] sm:h-[280px] transition-transform duration-700"
         style={{
           transformStyle: "preserve-3d",
           transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
         }}
       >
-        {/* Front */}
+        {/* Front — numeral + thumbnail */}
         <div
-          className="absolute inset-0 rounded-2xl glass-card-gold flex flex-col items-center justify-center border border-secondary/20 overflow-hidden"
+          className="absolute inset-0 rounded-2xl overflow-hidden border border-secondary/20"
           style={{ backfaceVisibility: "hidden" }}
         >
-          {/* Shimmer */}
+          <img
+            src={poster}
+            alt={item.caption}
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: "brightness(0.55) saturate(0.85)" }}
+          />
           <div
-            className="absolute inset-0 opacity-20"
+            className="absolute inset-0"
             style={{
-              background: "linear-gradient(90deg, transparent, hsl(var(--love-gold) / 0.3), transparent)",
-              backgroundSize: "200% 100%",
-              animation: "shimmer 3s linear infinite",
+              background:
+                "linear-gradient(180deg, hsl(0 0% 0% / 0.2) 0%, hsl(0 0% 0% / 0.7) 100%)",
             }}
           />
-          <span
-            className="text-5xl sm:text-6xl font-bold text-secondary font-display relative z-[1]"
-            style={{ animation: `reasonPulse 3.6s ease-in-out infinite ${(index % 5) * 0.2}s`, display: "inline-block" }}
-          >
-            {reason.front}
-          </span>
-          <span className="text-xs text-muted-foreground mt-2 font-mono tracking-widest uppercase relative z-[1]">
-            Tap to reveal
-          </span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span
+              className="text-5xl sm:text-6xl font-bold text-secondary font-display relative z-[1]"
+              style={{ animation: `reasonPulse 3.6s ease-in-out infinite ${(index % 5) * 0.2}s`, display: "inline-block" }}
+            >
+              {numeral}
+            </span>
+            <span className="text-[10px] text-foreground/80 mt-2 font-mono tracking-widest uppercase relative z-[1]">
+              {item.label}
+            </span>
+            <span className="text-[10px] text-muted-foreground mt-4 font-mono tracking-widest uppercase relative z-[1]">
+              Tap to reveal
+            </span>
+          </div>
+          {isVideo && (
+            <span className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/70 backdrop-blur flex items-center justify-center text-foreground text-xs">
+              ▶
+            </span>
+          )}
         </div>
 
-        {/* Back */}
+        {/* Back — textbox with caption, subtitle, VIEW button */}
         <div
           className="absolute inset-0 rounded-2xl glass-card flex flex-col items-center justify-center p-5 sm:p-6 border border-primary/20"
           style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
         >
           <span
-            className="text-3xl mb-3"
-            style={{ animation: `dreamFloat 3.2s ease-in-out infinite ${(index % 5) * 0.18}s`, display: "inline-block" }}
+            className="font-mono text-[9px] tracking-[0.4em] uppercase text-primary/70 mb-3"
           >
-            {reason.emoji}
+            {item.label}
           </span>
-          <p className="text-foreground/80 text-sm sm:text-base leading-relaxed text-center">
-            {reason.back}
+          <h3
+            className="text-foreground font-display text-center leading-tight"
+            style={{
+              fontFamily: "'Fraunces', 'Playfair Display', serif",
+              fontSize: "clamp(1.1rem, 2.2vw, 1.4rem)",
+              fontWeight: 600,
+            }}
+          >
+            {item.caption}
+          </h3>
+          <div className="cinematic-rule my-3 mx-auto" style={{ maxWidth: 120 }} />
+          <p
+            className="text-muted-foreground text-xs sm:text-sm italic text-center leading-relaxed"
+            style={{ fontFamily: "'Fraunces', serif" }}
+          >
+            {item.subtitle}
           </p>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); open(item); }}
+            className="mt-4 inline-flex items-center gap-2 text-[10px] tracking-[0.35em] uppercase font-mono text-primary hover:text-foreground transition-colors"
+          >
+            <span>View {isVideo ? "Clip" : "Frame"}</span>
+            <span className="inline-block w-6 h-[1px] bg-primary/60" />
+          </button>
         </div>
       </div>
       </TiltCard>
@@ -104,32 +136,34 @@ export default function ReasonsPage() {
     <div className="min-h-screen relative pb-32">
       <ParticleCanvas particlesRef={particlesRef} />
 
-      <div className="relative z-[1] max-w-[900px] mx-auto px-6 pt-24 sm:pt-32">
+      <div className="relative z-[1] max-w-[1100px] mx-auto px-6 pt-24 sm:pt-32">
         <div className="text-center mb-12">
-          <span data-parallax="-0.05" className="display-eyebrow inline-block mb-4">A Confession In Ten Parts</span>
+          <span data-parallax="-0.05" className="display-eyebrow inline-block mb-4">Reel · 2025 — 2026 · Director's Cut</span>
           <h1
             data-reveal
             data-parallax="-0.08"
             className="display-mega text-gradient-gold mb-5"
             style={{ animation: "fadeSlide 1s cubic-bezier(0.23,1,0.32,1) forwards" }}
           >
-            10 Reasons I Love You
+            The Most Beautiful Girl
           </h1>
           <div className="cinematic-rule mx-auto max-w-[280px] mb-5" />
           <p
             className="text-muted-foreground text-sm sm:text-base italic"
             style={{ opacity: 0, animation: "fadeSlide 1s cubic-bezier(0.23,1,0.32,1) 0.3s forwards" }}
           >
-            Tap each card to reveal
+            Tap each card to reveal — then open the frame
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {REASONS.map((r, i) => (
-            <FlipCard key={i} reason={r} index={i} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          {GALLERY_ITEMS.map((item, i) => (
+            <FlipCard key={item.id} item={item} index={i} />
           ))}
         </div>
       </div>
+
+      <GalleryLightbox />
     </div>
   );
 }
