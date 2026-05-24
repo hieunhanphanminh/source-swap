@@ -4,10 +4,10 @@ import GalleryPage from "@/pages/GalleryPage";
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: "Photo Gallery — The Most Beautiful Girl" },
-      { name: "description", content: "An immersive cinematic gallery for Rhia." },
-      { property: "og:title", content: "Photo Gallery — Love Rhia" },
-      { property: "og:description", content: "An immersive cinematic gallery." },
+      { title: "Ten Reasons — A Confession in Ten Parts" },
+      { name: "description", content: "Ten cinematic reasons, scored like a director's reel, for Rhia." },
+      { property: "og:title", content: "Ten Reasons — Love Rhia" },
+      { property: "og:description", content: "A confession in ten parts, frame by frame." },
     ],
   }),
   component: GalleryPage,

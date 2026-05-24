@@ -4,10 +4,10 @@ import ReasonsPage from "@/pages/ReasonsPage";
 export const Route = createFileRoute("/reasons")({
   head: () => ({
     meta: [
-      { title: "10 Reasons — Why I Love You, Rhia" },
-      { name: "description", content: "Ten reasons, hand-written, for Rhia Henne." },
-      { property: "og:title", content: "10 Reasons — Love Rhia" },
-      { property: "og:description", content: "Why I love you, Rhia." },
+      { title: "The Most Beautiful Girl — A Reel for Rhia" },
+      { name: "description", content: "An interactive flip-card reel of photos and clips of Rhia." },
+      { property: "og:title", content: "The Most Beautiful Girl — Love Rhia" },
+      { property: "og:description", content: "Frames and clips, flipped open like little love notes." },
     ],
   }),
   component: ReasonsPage,

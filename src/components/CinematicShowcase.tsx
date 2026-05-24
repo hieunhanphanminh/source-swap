@@ -137,13 +137,13 @@ export default function CinematicShowcase({ items }: Props) {
         ref={stageRef}
         className="relative mx-auto"
         style={{
-          maxWidth: "1200px",
+          maxWidth: "1600px",
           transform: reduced ? undefined : "translate3d(0, var(--cam-y, 0px), 0)",
           willChange: reduced ? undefined : "transform",
         }}
       >
 
-        <div className="flex flex-col gap-y-32 sm:gap-y-44 md:gap-y-56 px-4 sm:px-6 md:px-8">
+        <div className="flex flex-col gap-y-56 sm:gap-y-72 md:gap-y-96 px-6 sm:px-10 md:px-16">
           {items.map((item, i) => (
             <ShowcaseBlock
               key={item.id}
@@ -206,13 +206,16 @@ function ShowcaseBlock({
   // Cinematic composition variants — break the rigid alternating rhythm.
   // Each block gets distinct image scale, vertical placement, text offset,
   // tilt and image aspect so the page reads as a film sequence, not a grid.
+  // Vertical separation: imgTop + image height (~aspect-derived) must stay
+  // clear of txtTop so the typography never collides with the image plane on
+  // the widened 1600px stage.
   const VARIANTS = [
-    { imgW: 58, imgTop: 6,  txtTop: 48, txtW: 50, tilt: -1.2, aspect: "4 / 3"  },
-    { imgW: 68, imgTop: 18, txtTop: 28, txtW: 44, tilt:  0.8, aspect: "16 / 11" },
-    { imgW: 52, imgTop: 22, txtTop: 56, txtW: 56, tilt: -0.6, aspect: "5 / 4"  },
-    { imgW: 72, imgTop: 4,  txtTop: 60, txtW: 48, tilt:  1.4, aspect: "16 / 10" },
-    { imgW: 60, imgTop: 26, txtTop: 18, txtW: 46, tilt: -0.9, aspect: "3 / 2"  },
-    { imgW: 64, imgTop: 12, txtTop: 50, txtW: 52, tilt:  1.0, aspect: "5 / 4"  },
+    { imgW: 50, imgTop: 4,  txtTop: 60, txtW: 44, tilt: -1.2, aspect: "4 / 3"  },
+    { imgW: 56, imgTop: 14, txtTop: 72, txtW: 40, tilt:  0.8, aspect: "16 / 11" },
+    { imgW: 48, imgTop: 8,  txtTop: 64, txtW: 46, tilt: -0.6, aspect: "5 / 4"  },
+    { imgW: 58, imgTop: 2,  txtTop: 70, txtW: 42, tilt:  1.4, aspect: "16 / 10" },
+    { imgW: 52, imgTop: 12, txtTop: 4,  txtW: 42, tilt: -0.9, aspect: "3 / 2"  },
+    { imgW: 54, imgTop: 6,  txtTop: 66, txtW: 44, tilt:  1.0, aspect: "5 / 4"  },
   ] as const;
   const v = VARIANTS[index % VARIANTS.length];
 
@@ -374,8 +377,8 @@ function ShowcaseBlock({
       ref={ref}
       className="relative md:overflow-visible"
       style={{
-        // Tall cinematic stage so image + text can overlap in z-space
-        minHeight: "clamp(620px, 86vh, 880px)",
+        // Tall cinematic stage so image + text never overlap, even on tall variants
+        minHeight: "clamp(820px, 110vh, 1180px)",
         perspective: "2200px",
         perspectiveOrigin: isLeft ? "70% 50%" : "30% 50%",
         opacity: revealed ? 1 : 0,
