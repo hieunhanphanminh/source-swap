@@ -8,10 +8,10 @@ type Variant = "gallery" | "timeline" | "dreams" | "reasons" | "letter";
 
 const PALETTE: Record<Variant, { a: string; b: string; orbs: number; sparkleColor: string }> = {
   gallery:  { a: "#cbd5e1", b: "#94a3b8", orbs: 14, sparkleColor: "#e2e8f0" },
-  timeline: { a: "#ffd166", b: "#ff5f9e", orbs: 10, sparkleColor: "#ffe9b8" },
-  dreams:   { a: "#7dd3fc", b: "#a78bfa", orbs: 18, sparkleColor: "#cfe7ff" },
-  reasons:  { a: "#ff5f9e", b: "#ffd166", orbs: 12, sparkleColor: "#ffd6e8" },
-  letter:   { a: "#ffd166", b: "#ff8fab", orbs: 8,  sparkleColor: "#ffe1bf" },
+  timeline: { a: "#cbd5e1", b: "#94a3b8", orbs: 10, sparkleColor: "#e2e8f0" },
+  dreams:   { a: "#9ca3af", b: "#cbd5e1", orbs: 18, sparkleColor: "#e5e7eb" },
+  reasons:  { a: "#cbd5e1", b: "#9ca3af", orbs: 12, sparkleColor: "#e2e8f0" },
+  letter:   { a: "#cbd5e1", b: "#94a3b8", orbs: 8,  sparkleColor: "#e2e8f0" },
 };
 
 function Orbs({ count, color }: { count: number; color: string }) {
