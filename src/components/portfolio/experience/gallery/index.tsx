@@ -1,4 +1,4 @@
-import { useScroll } from "@react-three/drei";
+import { Environment, Sparkles, useScroll } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import gsap from "gsap";
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
