@@ -120,13 +120,26 @@ const Gallery = () => {
 
   return (
     <group>
-      <fog attach="fog" args={["#e6ecf2", 18, 60]} />
-      <ambientLight intensity={0.4} color="#dbe6f2" />
-      <Wanderer
-        rotation={new THREE.Euler(0, Math.PI / 6, 0)}
-        scale={new THREE.Vector3(1.5, 1.5, 1.5)}
-        position={new THREE.Vector3(0, -1, -1)}
-      />
+      <fog attach="fog" args={["#d8c9b8", 22, 70]} />
+      <ambientLight intensity={0.5} color="#f3e8d8" />
+      <hemisphereLight args={["#fde6c4", "#3a2d22", 0.6]} />
+      <directionalLight position={[6, 12, 4]} intensity={0.9} color="#ffd9a8" />
+      <Environment preset="dawn" />
+
+      {/* World props anchored near the focused camera (y ≈ -39) */}
+      <group position={[0, -40, 0]}>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]} receiveShadow>
+          <planeGeometry args={[200, 200]} />
+          <meshStandardMaterial color="#cbb89a" roughness={1} metalness={0} />
+        </mesh>
+        <Sparkles count={80} scale={[40, 8, 40]} size={3} speed={0.3} color="#fff1d6" />
+        <Wanderer
+          rotation={new THREE.Euler(0, Math.PI / 6, 0)}
+          scale={new THREE.Vector3(1.5, 1.5, 1.5)}
+          position={new THREE.Vector3(3, 0, -6)}
+        />
+      </group>
+
       <GalleryCarousel />
       {isActive && isMobile && <TouchPanControls maxRotation={Math.PI} />}
     </group>
