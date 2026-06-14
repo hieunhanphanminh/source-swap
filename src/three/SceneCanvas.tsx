@@ -12,9 +12,8 @@ export default function SceneCanvas({ pathname }: Props) {
   const reduced = useReducedMotion();
   const mobile = useIsMobile();
 
-  const variant: "hero" | "gallery" | "timeline" | "dreams" | "reasons" | "letter" =
+  const variant: "hero" | "timeline" | "dreams" | "reasons" | "letter" =
     pathname === "/" ? "hero"
-      : pathname.startsWith("/gallery") ? "gallery"
       : pathname.startsWith("/timeline") ? "timeline"
       : pathname.startsWith("/dreams") ? "dreams"
       : pathname.startsWith("/reasons") ? "reasons"
