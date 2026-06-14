@@ -4,7 +4,7 @@ import { Link, useLocation } from "@/lib/router-compat";
 const NAV_ITEMS = [
   { path: "/", label: "Home", emoji: "💖" },
   { path: "/timeline", label: "Timeline", emoji: "📅" },
-  { path: "/gallery", label: "Gallery", emoji: "📸" },
+  
   { path: "/reasons", label: "Reasons", emoji: "💛" },
   { path: "/dreams", label: "Dreams", emoji: "✨" },
   { path: "/letter", label: "Letter", emoji: "💌" },
