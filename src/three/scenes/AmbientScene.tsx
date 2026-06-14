@@ -4,10 +4,9 @@ import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useScrollProgressRef } from "../useScrollProgress";
 
-type Variant = "gallery" | "timeline" | "dreams" | "reasons" | "letter";
+type Variant = "timeline" | "dreams" | "reasons" | "letter";
 
 const PALETTE: Record<Variant, { a: string; b: string; orbs: number; sparkleColor: string }> = {
-  gallery:  { a: "#cbd5e1", b: "#94a3b8", orbs: 14, sparkleColor: "#e2e8f0" },
   timeline: { a: "#cbd5e1", b: "#94a3b8", orbs: 10, sparkleColor: "#e2e8f0" },
   dreams:   { a: "#9ca3af", b: "#cbd5e1", orbs: 18, sparkleColor: "#e5e7eb" },
   reasons:  { a: "#cbd5e1", b: "#9ca3af", orbs: 12, sparkleColor: "#e2e8f0" },

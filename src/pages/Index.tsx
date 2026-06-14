@@ -130,7 +130,7 @@ function CountdownDigit({ value, label }: { value: number; label: string }) {
 
 const NAV_CARDS = [
   { path: "/timeline", emoji: "📅", title: "Our Timeline", desc: "Every milestone of our story", color: "primary" },
-  { path: "/gallery", emoji: "📸", title: "Photo Gallery", desc: "The most beautiful girl", color: "primary" },
+  
   { path: "/reasons", emoji: "💛", title: "10 Reasons", desc: "Why I love you, Rhia", color: "secondary" },
   { path: "/dreams", emoji: "✨", title: "Bucket List", desc: "Dreams we'll make real", color: "accent" },
 ];

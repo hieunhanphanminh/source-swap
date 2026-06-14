@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ReasonsRouteImport } from './routes/reasons'
 import { Route as LetterRouteImport } from './routes/letter'
-import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as DreamsRouteImport } from './routes/dreams'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -31,11 +30,6 @@ const LetterRoute = LetterRouteImport.update({
   path: '/letter',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DreamsRoute = DreamsRouteImport.update({
   id: '/dreams',
   path: '/dreams',
@@ -50,7 +44,6 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dreams': typeof DreamsRoute
-  '/gallery': typeof GalleryRoute
   '/letter': typeof LetterRoute
   '/reasons': typeof ReasonsRoute
   '/timeline': typeof TimelineRoute
@@ -58,7 +51,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dreams': typeof DreamsRoute
-  '/gallery': typeof GalleryRoute
   '/letter': typeof LetterRoute
   '/reasons': typeof ReasonsRoute
   '/timeline': typeof TimelineRoute
@@ -67,30 +59,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dreams': typeof DreamsRoute
-  '/gallery': typeof GalleryRoute
   '/letter': typeof LetterRoute
   '/reasons': typeof ReasonsRoute
   '/timeline': typeof TimelineRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dreams' | '/gallery' | '/letter' | '/reasons' | '/timeline'
+  fullPaths: '/' | '/dreams' | '/letter' | '/reasons' | '/timeline'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dreams' | '/gallery' | '/letter' | '/reasons' | '/timeline'
-  id:
-    | '__root__'
-    | '/'
-    | '/dreams'
-    | '/gallery'
-    | '/letter'
-    | '/reasons'
-    | '/timeline'
+  to: '/' | '/dreams' | '/letter' | '/reasons' | '/timeline'
+  id: '__root__' | '/' | '/dreams' | '/letter' | '/reasons' | '/timeline'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DreamsRoute: typeof DreamsRoute
-  GalleryRoute: typeof GalleryRoute
   LetterRoute: typeof LetterRoute
   ReasonsRoute: typeof ReasonsRoute
   TimelineRoute: typeof TimelineRoute
@@ -119,13 +102,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LetterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dreams': {
       id: '/dreams'
       path: '/dreams'
@@ -146,7 +122,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DreamsRoute: DreamsRoute,
-  GalleryRoute: GalleryRoute,
   LetterRoute: LetterRoute,
   ReasonsRoute: ReasonsRoute,
   TimelineRoute: TimelineRoute,
@@ -154,13 +129,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
