@@ -71,7 +71,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Caveat:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700;900&family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,900&display=swap" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
